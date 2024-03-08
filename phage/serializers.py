@@ -21,7 +21,7 @@ class phageSerializer(serializers.ModelSerializer):
     def get_lifestyle(self, obj):
         from phage_lifestyle.models import phage_lifestyle
         # lifestyle = phage_lifestyle.objects.filter(phage_id=obj.id)
-        print('============================= phage serise phage_lifestyle.objects.all()', phage_lifestyle.objects.all())
+        # print('============================= phage serise phage_lifestyle.objects.all()', phage_lifestyle.objects.all())
         lifestyle = phage_lifestyle.objects.all()
         return lifestyle[0].lifestyle
 

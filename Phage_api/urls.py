@@ -233,6 +233,6 @@ urlpatterns = [
          phage_protein.views.download_protein_fasta),
      #download a cluster fasta
     path('download/cluster/fasta/',phage_clusters.views.getfasta),
-    path('files/<path:path>/', phage.views.downloadbypaath),
+    path('files/<path:path>/', phage.views.downloadbypaath), ### will use this path to download all files
     path('fasta/<path:path>/', phage.views.downloadbypaatfasta),
 ]

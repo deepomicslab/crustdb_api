@@ -26,10 +26,6 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 
 class phageViewSet(viewsets.ModelViewSet):
-
-    # from scripts import import_phage
-    # import_phage.add_data()
-
     queryset = phage.objects.order_by('display_id')
     serializer_class = phageSerializer
     pagination_class = LargeResultsSetPagination
@@ -408,7 +404,8 @@ def download_phage_fasta(request):
 def downloadbypaath(request, path):
     # print('=========================== download page view path: ', path)
     # =========================== download page view path:  layer2/sublayer2_3/2_3.csv
-    file_path = local_settings.METADATA + path
+    # =========================== download link: https://crustdbapi.deepomics.org/files/layer2/sublayer2_1/2_1.csv
+    file_path = local_settings.FILE_DOWNLOAD_PATH + path
     file = open(file_path, 'rb')
     response = FileResponse(file)
     filename = file.name.split('/')[-1]

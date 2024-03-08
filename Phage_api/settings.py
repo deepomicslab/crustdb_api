@@ -97,25 +97,13 @@ DATABASES = {
     getattr(
         local_settings, 'DATABASES', {
             'ENGINE': 'django.db.backends.postgresql', # django 默认帮助连接 DB
-            'NAME': 'phage', # DB name
+            'NAME': 'crustdb', # DB name
             'USER': 'postgres',
             'PASSWORD': 'wAFQ63y!AEsH',
             'HOST': 'localhost', # 数据库所在服务器
             'PORT': '5432',
         })
 }
-# DATABASES = {
-#     'default':
-#     getattr(
-#         local_settings, 'DATABASES', {
-#             'ENGINE': 'django.db.backends.postgresql', # django 默认帮助连接 DB
-#             'NAME': 'crustdb', # DB name
-#             'USER': 'postgres',
-#             'PASSWORD': 'wAFQ63y!AEsH',
-#             'HOST': 'localhost', # 数据库所在服务器
-#             'PORT': '5432',
-#         })
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

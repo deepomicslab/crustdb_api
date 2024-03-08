@@ -9,7 +9,8 @@ django.setup()
 
 def add_data():
     from datasets.models import datasets
-    with open('/mnt/e/Documents/Project/03-ST_Conformation_website/crustdb_platform/data/datasets.csv', 'r') as f:
+    from Phage_api import settings_local as local_settings
+    with open(local_settings.CRUSTDB_DATABASE + 'datasets.csv', 'r') as f:
         lines = f.readlines()
     for line in lines:
         l=line.strip().split(", ")

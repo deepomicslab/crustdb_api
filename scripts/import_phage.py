@@ -9,7 +9,10 @@ def add_data():
     from phage.models import phage
     from datasets.models import datasets
 
-    with open('/mnt/e/Documents/Project/03-ST_Conformation_website/crustdb_platform/data/phage.tsv', 'r') as f:
+    from Phage_api import settings_local as local_settings
+    print('file: ', local_settings.CRUSTDB_DATABASE + 'phage.tsv')
+    print('file: ', '/home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/phage.tsv')
+    with open(local_settings.CRUSTDB_DATABASE + 'phage.tsv', 'r') as f:
         lines = f.readlines()
 
     for line in lines[1:]:
