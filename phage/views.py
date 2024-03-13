@@ -2,7 +2,9 @@ from io import BytesIO
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from phage.models import phage
+from crustdb_main.models import crustdb_main
 from phage.serializers import phageSerializer
+from crustdb_main.serializers import crustdbSerializer
 from phage_clusters.models import phage_clusters
 from phage_subcluster.models import phage_subcluster
 from rest_framework.pagination import PageNumberPagination
@@ -34,7 +36,18 @@ class phageViewSet(viewsets.ModelViewSet):
         paginator = self.pagination_class()
         result_page = paginator.paginate_queryset(self.queryset, request)
         serializer = phageSerializer(result_page, many=True)
-        print('==================== serializer.data ', serializer.data)
+        return paginator.get_paginated_response(serializer.data)
+
+class crustdbMainViewSet(viewsets.ModelViewSet):
+    # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
+    queryset = crustdb_main.objects.order_by('id')
+    serializer_class = crustdbSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def get(self, request):
+        paginator = self.pagination_class()
+        result_page = paginator.paginate_queryset(self.queryset, request)
+        serializer = crustdbSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
@@ -226,11 +239,15 @@ class phage_searchView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 
+# 仿照 getfasta 写 getAdata，现在只改到 downloadtype.value === 'single', i.e., phageid=2
 @api_view(['GET'])
 def getfasta(request):
     querydict = request.query_params.dict()
+    # print('phage views getfasta querydict: ', querydict)
+    # phage views getfasta querydict:  {'phageid': '2'}
+    # url: https://crustdb.deepomics.org/api/phage/fasta/?phageid=2
     if 'phageid' in querydict:
-        phageid = querydict['phageid']
+        phageid = querydict['phageid'] #2
         phage_obj = phage.objects.get(id=phageid)
         phagedata = phageSerializer(phage_obj).data
         pathlist = [phagedata['fastapath']]

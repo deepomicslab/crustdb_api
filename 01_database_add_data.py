@@ -16,13 +16,14 @@ def log(log_str):
 # import_datasets.add_data()
 # log(" [completed] scripts.import_datasets\n")
 
+# from scripts import import_phage
+# import_phage.add_data()
+# log(" [completed] scripts.import_phage\n")
 
-from scripts import import_phage
-import_phage.add_data()
-log(" [completed] scripts.import_phage\n")
+# from scripts import import_lifestyle
+# import_lifestyle.add_data()
+# log(" [completed] scripts.import_lifestyle\n")
 
-from scripts import import_lifestyle
-import_lifestyle.add_data()
-log(" [completed] scripts.import_lifestyle\n")
-
-
+from scripts import import_crustdb_main
+import_crustdb_main.add_data()
+log(" [completed] scripts.import_crustdb_main\n")

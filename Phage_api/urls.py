@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from phage.views import phageViewSet, phage_NCBIViewSet, phage_PhagesDBViewSet, phage_GPDViewSet, phage_GVDViewSet, phage_MGVViewSet, phage_TemPhDViewSet, phage_CHVDViewSet, phage_IGVDViewSet, phage_IMG_VRViewSet, phage_GOV2ViewSet, phage_STVViewSet
+from phage.views import phageViewSet, crustdbMainViewSet, phage_NCBIViewSet, phage_PhagesDBViewSet, phage_GPDViewSet, phage_GVDViewSet, phage_MGVViewSet, phage_TemPhDViewSet, phage_CHVDViewSet, phage_IGVDViewSet, phage_IMG_VRViewSet, phage_GOV2ViewSet, phage_STVViewSet
 from phage.views import phage_crisprViewSet
 
 from phage_lifestyle.views import phage_lifestyleViewSet
@@ -135,12 +135,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('rest_framework.urls')),
     path('phage/', phageViewSet.as_view({'get': 'list'})),
+    path('crustdb_main/', crustdbMainViewSet.as_view({'get': 'list'})),
     path('crispr/', phage_crisprViewSet.as_view({'get': 'list'})),
     path('anticrispr/', phage_anticrisprViewSet.as_view({'get': 'list'})),
     path('trna/', phage_trnasViewSet.as_view({'get': 'list'})),
 
-    path('terminators/',
-         phage_protein.views.phage_terminatorsViewSet.as_view({'get': 'list'})),
+    path('terminators/', phage_protein.views.phage_terminatorsViewSet.as_view({'get': 'list'})),
 
     path('phage/detail', phage.views.phageView.as_view()),
     path('phage/cluster', phage.views.phage_clusterView.as_view()),
@@ -149,7 +149,8 @@ urlpatterns = [
     path('phage/search/', phage.views.phage_searchView.as_view()),
 
     #base id download
-    path('phage/fasta/', phage.views.getfasta),
+    path('phage/fasta/', phage.views.getfasta), # <-- getAdata
+    # path('crust/adata/', phage.views.getAdata), # e.g. crust/adata/axolotl/
     path('phage/gbk/', phage.views.getgbk),
     path('phage/gff/', phage.views.getgff),
     path('phage/meta/', phage.views.getphagemeta),
