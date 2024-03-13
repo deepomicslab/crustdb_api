@@ -7,7 +7,6 @@ django.setup()
 
 def add_data():
     from crustdb_main.models import crustdb_main
-
     from Phage_api import settings_local as local_settings
     
     with open(local_settings.CRUSTDB_DATABASE + 'main/CRUST_OUTPUT_INFO.csv', 'r') as f:
