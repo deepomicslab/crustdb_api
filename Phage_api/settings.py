@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'django_crontab',
+
     'crustdb_main',
+    'details',
+    
     'phage', #
     'phage_protein', #
     'phage_clusters', #

@@ -10,11 +10,8 @@ class crustdb_main(models.Model):
     disease_steps = models.CharField(max_length = 200)
     sex = models.CharField(max_length = 6)
     slice_name = models.CharField(max_length = 200)
-    cell_num = models.IntegerField(blank=True, null=True)
-    gene_num = models.IntegerField(blank=True, null=True)
-    gene_filter_threshold = models.FloatField()
-    anchor_gene_proportion = models.FloatField()
-    inferred_trans_center_num = models.CharField(blank=True, null=True) 
+    cell_num = models.IntegerField()
+    gene_num = models.IntegerField()
 
     class Meta:
         db_table = 'crustdb_main'
