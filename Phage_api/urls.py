@@ -153,6 +153,7 @@ urlpatterns = [
     path('phage/gbk/', phage.views.getgbk),
     path('phage/gff/', phage.views.getgff), # <-- getAdata refer to 
     path('crustdb_main/adata/', phage.views.getAdata), # e.g. crust/adata/axolotl/ getAdata
+    path('crustdb_main/zip/', phage.views.getZipData), # e.g. crust/adata/axolotl/ getAdata
     path('phage/meta/', phage.views.getphagemeta),
 
 

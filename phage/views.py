@@ -358,8 +358,42 @@ def getAdata(request):
     response['Content-Disposition'] = 'attachment; filename="adata.h5ad"'
     response['Content-Type'] = 'text/plain'
     return response   
-
-
+# 类似地，写出 getZipData
+@api_view(['GET'])
+def getZipData(request):
+    querydict = request.query_params.dict()
+    if 'crustid' in querydict:
+        crustid = querydict['crustid']
+        crustdb_obj = crustdb_main.objects.get(id=crustid)
+        crustdata = crustdbSerializer(crustdb_obj).data
+        pathlist = [crustdata['zippedpath']]
+    elif 'crustids' in querydict:
+        crustids = querydict['crustids']
+        crustids = crustids.split(',')
+        crustdb_obj = crustdb_main.objects.filter(id__in=crustids)
+        crustdatas = phageSerializer(crustdb_obj, many=True).data
+        pathlist = []
+        for crustdata in crustdatas:
+            pathlist.append(crustdata['zippedpath'])
+    else:
+        pathlist = [
+            '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3']
+        file = open('/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
+        response = FileResponse(file)
+        filename = file.name.split('/')[-1]
+        response['Content-Disposition'] = "attachment; filename="+filename
+        response['Content-Type'] = 'text/plain'
+        return response
+    content = b''
+    for path in pathlist:
+        with open(path, 'rb') as file:
+            content = content+file.read()
+    content_bytes = content
+    buffer = BytesIO(content_bytes)
+    response = response = FileResponse(buffer)
+    response['Content-Disposition'] = 'attachment; filename="output.zip"'
+    response['Content-Type'] = 'text/plain'
+    return response   
 
 
 

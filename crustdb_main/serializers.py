@@ -14,6 +14,7 @@ class crustdbSerializer(serializers.ModelSerializer):
     gbkpath = serializers.SerializerMethodField()
     gffpath = serializers.SerializerMethodField()
     adatapath = serializers.SerializerMethodField()
+    zippedpath = serializers.SerializerMethodField()
     
     class Meta:
         model = crustdb_main
@@ -42,3 +43,7 @@ class crustdbSerializer(serializers.ModelSerializer):
         # return local_settings.PHAGEGFF+str(obj.Data_Sets.name)+'/'+obj.Acession_ID+'.gff3'
         # print('================= serilizers.py get_adatapath ', local_settings.CRUSTDB_DATABASE+species+'s/'+obj.data_uid+'/adata.h5ad')
         return local_settings.CRUSTDB_DATABASE+species+'s/'+obj.data_uid+'/adata.h5ad'
+    def get_zippedpath(self, obj):
+        import re
+        species = re.findall(r'[(](.*?)[)]', obj.species)[0]
+        return local_settings.CRUSTDB_DATABASE+'Zipped_'+species+'s/'+obj.data_uid+'.zip'
