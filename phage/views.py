@@ -239,7 +239,6 @@ class phage_searchView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 
-# 仿照 getfasta 写 getAdata，现在只改到 downloadtype.value === 'single', i.e., phageid=2
 @api_view(['GET'])
 def getfasta(request):
     querydict = request.query_params.dict()
@@ -281,11 +280,6 @@ def getfasta(request):
     response['Content-Type'] = 'text/plain'
     return response
 
-
-
-
-
-
 @api_view(['GET'])
 def getgbk(request):
     querydict = request.query_params.dict()
@@ -323,8 +317,70 @@ def getgbk(request):
     return response
 
 
+
+# 仿照 getgff 写 getAdata，现在只改到 downloadtype.value === 'single', i.e., crustid=2
+@api_view(['GET'])
+def getAdata(request):
+    querydict = request.query_params.dict()
+    # print('========================= phage views getgff querydict: ', querydict)
+    # phage views getfasta querydict:  {'phageid': '2'}
+    # url: https://crustdb.deepomics.org/api/phage/fasta/?phageid=2
+    # 这里用来索引的是表中的 id column （crustdb_main index.vue download()）
+    if 'crustid' in querydict:
+        crustid = querydict['crustid']
+        crustdb_obj = crustdb_main.objects.get(id=crustid)
+        crustdata = crustdbSerializer(crustdb_obj).data
+        pathlist = [crustdata['adatapath']]
+    elif 'crustids' in querydict:
+        crustids = querydict['crustids']
+        crustids = crustids.split(',')
+        crustdb_obj = crustdb_main.objects.filter(id__in=crustids)
+        crustdatas = phageSerializer(crustdb_obj, many=True).data
+        pathlist = []
+        for crustdata in crustdatas:
+            pathlist.append(crustdata['adatapath'])
+    else:
+        pathlist = [
+            '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3']
+        file = open('/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
+        response = FileResponse(file)
+        filename = file.name.split('/')[-1]
+        response['Content-Disposition'] = "attachment; filename="+filename
+        response['Content-Type'] = 'text/plain'
+        return response
+    content = b''
+    for path in pathlist:
+        with open(path, 'rb') as file:
+            content = content+file.read()
+    content_bytes = content
+    buffer = BytesIO(content_bytes)
+    response = response = FileResponse(buffer)
+    response['Content-Disposition'] = 'attachment; filename="adata.h5ad"'
+    response['Content-Type'] = 'text/plain'
+    return response   
+
+
+
+
+
+# file_path = local_settings.FILE_DOWNLOAD_PATH + path
+#     file = open(file_path, 'rb')
+#     response = FileResponse(file)
+#     filename = file.name.split('/')[-1]
+#     response['Content-Disposition'] = "attachment; filename="+filename
+#     response['Content-Type'] = 'text/plain'
+
+
+
+
+
+
+
 @api_view(['GET'])
 def getgff(request):
+    # print('phage views getfasta querydict: ', querydict)
+    # phage views getfasta querydict:  {'phageid': '2'}
+    # url: https://crustdb.deepomics.org/api/phage/fasta/?phageid=2
     querydict = request.query_params.dict()
     if 'phageid' in querydict:
         phageid = querydict['phageid']

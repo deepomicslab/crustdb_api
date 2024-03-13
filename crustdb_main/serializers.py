@@ -13,6 +13,7 @@ class crustdbSerializer(serializers.ModelSerializer):
     fastapath = serializers.SerializerMethodField()
     gbkpath = serializers.SerializerMethodField()
     gffpath = serializers.SerializerMethodField()
+    adatapath = serializers.SerializerMethodField()
     
     class Meta:
         model = crustdb_main
@@ -26,11 +27,18 @@ class crustdbSerializer(serializers.ModelSerializer):
     #     return lifestyle[0].lifestyle
 
     def get_fastapath(self, obj):
-        return 'tmp.fasta'
+        return 'empty.fasta'
 
     def get_gbkpath(self, obj):
-        return 'tmp.gbk'
+        return 'empty.gbk'
     
     def get_gffpath(self, obj):
         # return local_settings.PHAGEGFF+str(obj.Data_Sets.name)+'/'+obj.Acession_ID+'.gff3'
-        return 'tmp.gff3'
+        return 'empty.gff3'
+    
+    def get_adatapath(self, obj):
+        import re
+        species = re.findall(r'[(](.*?)[)]', obj.species)[0]
+        # return local_settings.PHAGEGFF+str(obj.Data_Sets.name)+'/'+obj.Acession_ID+'.gff3'
+        # print('================= serilizers.py get_adatapath ', local_settings.CRUSTDB_DATABASE+species+'s/'+obj.data_uid+'/adata.h5ad')
+        return local_settings.CRUSTDB_DATABASE+species+'s/'+obj.data_uid+'/adata.h5ad'

@@ -149,10 +149,10 @@ urlpatterns = [
     path('phage/search/', phage.views.phage_searchView.as_view()),
 
     #base id download
-    path('phage/fasta/', phage.views.getfasta), # <-- getAdata
-    # path('crust/adata/', phage.views.getAdata), # e.g. crust/adata/axolotl/
+    path('phage/fasta/', phage.views.getfasta), 
     path('phage/gbk/', phage.views.getgbk),
-    path('phage/gff/', phage.views.getgff),
+    path('phage/gff/', phage.views.getgff), # <-- getAdata refer to 
+    path('crustdb_main/adata/', phage.views.getAdata), # e.g. crust/adata/axolotl/ getAdata
     path('phage/meta/', phage.views.getphagemeta),
 
 
