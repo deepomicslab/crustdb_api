@@ -23,9 +23,9 @@ from phage.views import phage_crisprViewSet
 from phage_lifestyle.views import phage_lifestyleViewSet
 from phage_hosts.views import phage_hostsViewSet
 from phage_hosts.views import phage_hostnodeViewSet
-from phage_protein.views import phage_proteinViewSet, phage_protein_NCBIViewSet, phage_protein_PhagesDBViewSet, phage_protein_GPDViewSet, phage_protein_GVDViewSet, phage_protein_MGVViewSet, phage_protein_TemPhDViewSet, phage_protein_STVViewSet,phage_protein_CHVDViewSet,phage_protein_GOV2ViewSet,phage_protein_IMG_VRViewSet,phage_protein_IGVDViewSet
+from phage_protein.views import phage_proteinViewSet, phage_protein_NCBIViewSet, phage_protein_PhagesDBViewSet, phage_protein_GPDViewSet, phage_protein_GVDViewSet, phage_protein_MGVViewSet, phage_protein_TemPhDViewSet, phage_protein_STVViewSet, phage_protein_CHVDViewSet, phage_protein_GOV2ViewSet, phage_protein_IMG_VRViewSet, phage_protein_IGVDViewSet
 
-from phage_protein.views import phage_protein_tmhmm_NCBI_SerializerViewSet, phage_protein_tmhmm_PhagesDB_SerializerViewSet, phage_protein_tmhmm_GPD_SerializerViewSet, phage_protein_tmhmm_GVD_SerializerViewSet, phage_protein_tmhmm_MGV_SerializerViewSet, phage_protein_tmhmm_TemPhD_SerializerViewSet, phage_protein_tmhmm_STV_SerializerViewSet,phage_protein_tmhmm_CHVD_SerializerViewSet,phage_protein_tmhmm_GOV2_SerializerViewSet,phage_protein_tmhmm_IMG_VR_SerializerViewSet,phage_protein_tmhmm_IGVD_SerializerViewSet
+from phage_protein.views import phage_protein_tmhmm_NCBI_SerializerViewSet, phage_protein_tmhmm_PhagesDB_SerializerViewSet, phage_protein_tmhmm_GPD_SerializerViewSet, phage_protein_tmhmm_GVD_SerializerViewSet, phage_protein_tmhmm_MGV_SerializerViewSet, phage_protein_tmhmm_TemPhD_SerializerViewSet, phage_protein_tmhmm_STV_SerializerViewSet, phage_protein_tmhmm_CHVD_SerializerViewSet, phage_protein_tmhmm_GOV2_SerializerViewSet, phage_protein_tmhmm_IMG_VR_SerializerViewSet, phage_protein_tmhmm_IGVD_SerializerViewSet
 from phage_protein.views import phage_protein_anticrisprViewSet
 from phage_protein.views import phage_anticrisprViewSet
 from phage_clusters.views import phage_clustersViewSet
@@ -37,6 +37,7 @@ from task.views import taskViewSet
 from analysis.views import analysisViewSet
 
 import phage.views
+import details.views
 import phage_protein.views
 import phage_trna.views
 import phage_clusters.views
@@ -96,8 +97,10 @@ router.register('phage_protein_tmhmm_IGVD',
 
 router.register('phage_protein_anticrispr', phage_protein_anticrisprViewSet)
 
-router.register('phage_virulent_factor', phage_protein.views.phage_virulent_factorViewSet)
-router.register('phage_antimicrobial_resistance_gene', phage_protein.views.phage_antimicrobial_resistance_geneViewSet)
+router.register('phage_virulent_factor',
+                phage_protein.views.phage_virulent_factorViewSet)
+router.register('phage_antimicrobial_resistance_gene',
+                phage_protein.views.phage_antimicrobial_resistance_geneViewSet)
 
 
 router.register('phage_clusters', phage_clustersViewSet)
@@ -140,7 +143,8 @@ urlpatterns = [
     path('anticrispr/', phage_anticrisprViewSet.as_view({'get': 'list'})),
     path('trna/', phage_trnasViewSet.as_view({'get': 'list'})),
 
-    path('terminators/', phage_protein.views.phage_terminatorsViewSet.as_view({'get': 'list'})),
+    path('terminators/',
+         phage_protein.views.phage_terminatorsViewSet.as_view({'get': 'list'})),
 
     path('phage/detail', phage.views.phageView.as_view()),
     path('phage/cluster', phage.views.phage_clusterView.as_view()),
@@ -148,12 +152,14 @@ urlpatterns = [
     path('phage/filter/', phage.views.phage_filterView.as_view()),
     path('phage/search/', phage.views.phage_searchView.as_view()),
 
-    #base id download
-    path('phage/fasta/', phage.views.getfasta), 
+    # base id download
+    path('phage/fasta/', phage.views.getfasta),
     path('phage/gbk/', phage.views.getgbk),
-    path('phage/gff/', phage.views.getgff), # <-- getAdata refer to 
-    path('crustdb_main/adata/', phage.views.getAdata), # e.g. crust/adata/axolotl/ getAdata
-    path('crustdb_main/zip/', phage.views.getZipData), # e.g. crust/adata/axolotl/ getAdata
+    path('phage/gff/', phage.views.getgff),  # <-- getAdata refer to
+    # e.g. crust/adata/axolotl/ getAdata
+    path('crustdb_main/adata/', phage.views.getAdata),
+    # e.g. crust/adata/axolotl/ getAdata
+    path('crustdb_main/zip/', details.views.getZipData),
     path('phage/meta/', phage.views.getphagemeta),
 
 
@@ -194,23 +200,24 @@ urlpatterns = [
 
 
     path('tasks/detail/', task.views.viewtaskdetail),
-    path('tasks/detail/log/',task.views.viewtasklog),
+    path('tasks/detail/log/', task.views.viewtasklog),
     path('tasks/list/', task.views.viewtask),
     path('tasks/result/phage/', task.views.viewphage),
     path('tasks/result/phage/terminators/', task.views.viewphageterminators),
     path('tasks/result/phage/trnas/', task.views.viewphagetrnas),
     path('tasks/result/phage/crisprs/', task.views.viewphagecrisprs),
     path('tasks/result/phage/arvgs/', task.views.viewphagearvgs),
-    path('tasks/result/phage/transmembranes/', task.views.viewphagetransmembranes),
+    path('tasks/result/phage/transmembranes/',
+         task.views.viewphagetransmembranes),
     path('tasks/result/phage/anticrisprs/', task.views.viewphageanticrisprs),
 
-    
+
     path('tasks/result/phage/detail/', task.views.viewphagedetail),
     path('tasks/result/proteins/', task.views.viewprotein),
     path('tasks/result/modules/detail/', task.views.viewmodulesdetail),
     path('tasks/result/modules/', task.views.viewmodules),
 
-   #path('tasks/result/cluster/detail', task.views.viewclusterdetail),
+    # path('tasks/result/cluster/detail', task.views.viewclusterdetail),
 
     path('tasks/result/tree/', task.views.viewtree),
     path('tasks/result/phagefasta/', task.views.phagefasta),
@@ -233,8 +240,9 @@ urlpatterns = [
     path('download/phage/fasta/', phage.views.download_phage_fasta),
     path('download/protein/fasta/',
          phage_protein.views.download_protein_fasta),
-     #download a cluster fasta
-    path('download/cluster/fasta/',phage_clusters.views.getfasta),
-    path('files/<path:path>/', phage.views.downloadbypaath), ### will use this path to download all files
+    # download a cluster fasta
+    path('download/cluster/fasta/', phage_clusters.views.getfasta),
+    # will use this path to download all files
+    path('files/<path:path>/', phage.views.downloadbypaath),
     path('fasta/<path:path>/', phage.views.downloadbypaatfasta),
 ]

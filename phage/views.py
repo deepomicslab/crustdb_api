@@ -21,6 +21,8 @@ from phage_protein.models import phage_crispr
 import pandas as pd
 import random
 from datasets.models import datasets
+
+
 class LargeResultsSetPagination(PageNumberPagination):
     page_size = 30
     page_size_query_param = 'pagesize'
@@ -38,17 +40,18 @@ class phageViewSet(viewsets.ModelViewSet):
         serializer = phageSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+
 class crustdbMainViewSet(viewsets.ModelViewSet):
     # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
     queryset = crustdb_main.objects.order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
-    def get(self, request):
-        paginator = self.pagination_class()
-        result_page = paginator.paginate_queryset(self.queryset, request)
-        serializer = crustdbSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+    # def get(self, request):
+    #     paginator = self.pagination_class()
+    #     result_page = paginator.paginate_queryset(self.queryset, request)
+    #     serializer = crustdbSerializer(result_page, many=True)
+    #     return paginator.get_paginated_response(serializer.data)
 
 
 class phage_crisprViewSet(viewsets.ModelViewSet):
@@ -118,31 +121,36 @@ class phage_TemPhDViewSet(viewsets.ModelViewSet):
     serializer_class = phageSerializer
     pagination_class = LargeResultsSetPagination
 
+
 class phage_CHVDViewSet(viewsets.ModelViewSet):
     queryset = phage.objects.filter(Data_Sets__id=11)
     serializer_class = phageSerializer
     pagination_class = LargeResultsSetPagination
+
 
 class phage_IGVDViewSet(viewsets.ModelViewSet):
     queryset = phage.objects.filter(Data_Sets__id=12)
     serializer_class = phageSerializer
     pagination_class = LargeResultsSetPagination
 
+
 class phage_IMG_VRViewSet(viewsets.ModelViewSet):
     queryset = phage.objects.filter(Data_Sets__id=13)
     serializer_class = phageSerializer
     pagination_class = LargeResultsSetPagination
+
 
 class phage_GOV2ViewSet(viewsets.ModelViewSet):
     queryset = phage.objects.filter(Data_Sets__id=14)
     serializer_class = phageSerializer
     pagination_class = LargeResultsSetPagination
 
+
 class phage_STVViewSet(viewsets.ModelViewSet):
     queryset = phage.objects.filter(Data_Sets__id=15)
     serializer_class = phageSerializer
     pagination_class = LargeResultsSetPagination
-    
+
 
 class phageView(APIView):
     def get(self, request, *args, **kwargs):
@@ -216,9 +224,6 @@ class phage_filterView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 
-
-
-
 class phage_searchView(APIView):
     def get(self, request, *args, **kwargs):
         searchstr = request.query_params.dict()['search']
@@ -246,7 +251,7 @@ def getfasta(request):
     # phage views getfasta querydict:  {'phageid': '2'}
     # url: https://crustdb.deepomics.org/api/phage/fasta/?phageid=2
     if 'phageid' in querydict:
-        phageid = querydict['phageid'] #2
+        phageid = querydict['phageid']  # 2
         phage_obj = phage.objects.get(id=phageid)
         phagedata = phageSerializer(phage_obj).data
         pathlist = [phagedata['fastapath']]
@@ -261,13 +266,13 @@ def getfasta(request):
     else:
         pathlist = [
             '/home/platform/phage_db/phage_api/workspace/rawd_data/phage/all_sequence_v1.fasta']
-        file = open('/home/platform/phage_db/phage_data/data/phage_sequence/phage_fasta/All_fasta.tar.gz', 'rb')
+        file = open(
+            '/home/platform/phage_db/phage_data/data/phage_sequence/phage_fasta/All_fasta.tar.gz', 'rb')
         response = FileResponse(file)
         filename = file.name.split('/')[-1]
         response['Content-Disposition'] = "attachment; filename="+filename
         response['Content-Type'] = 'application/x-gzip'
         return response
-        
 
     content = ''
     for path in pathlist:
@@ -279,6 +284,7 @@ def getfasta(request):
     response['Content-Disposition'] = 'attachment; filename="sequence.fasta"'
     response['Content-Type'] = 'text/plain'
     return response
+
 
 @api_view(['GET'])
 def getgbk(request):
@@ -299,7 +305,8 @@ def getgbk(request):
     else:
         pathlist = [
             '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gbk/All.gbk']
-        file = open('/home/platform/phage_db/phage_data/data/phage_sequence/phage_gbk/All.gbk', 'rb')
+        file = open(
+            '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gbk/All.gbk', 'rb')
         response = FileResponse(file)
         filename = file.name.split('/')[-1]
         response['Content-Disposition'] = "attachment; filename="+filename
@@ -315,7 +322,6 @@ def getgbk(request):
     response['Content-Disposition'] = 'attachment; filename="sequence.gbk"'
     response['Content-Type'] = 'text/plain'
     return response
-
 
 
 # 仿照 getgff 写 getAdata，现在只改到 downloadtype.value === 'single', i.e., crustid=2
@@ -342,7 +348,8 @@ def getAdata(request):
     else:
         pathlist = [
             '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3']
-        file = open('/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
+        file = open(
+            '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
         response = FileResponse(file)
         filename = file.name.split('/')[-1]
         response['Content-Disposition'] = "attachment; filename="+filename
@@ -357,8 +364,10 @@ def getAdata(request):
     response = response = FileResponse(buffer)
     response['Content-Disposition'] = 'attachment; filename="adata.h5ad"'
     response['Content-Type'] = 'text/plain'
-    return response   
+    return response
 # 类似地，写出 getZipData
+
+
 @api_view(['GET'])
 def getZipData(request):
     querydict = request.query_params.dict()
@@ -378,7 +387,8 @@ def getZipData(request):
     else:
         pathlist = [
             '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3']
-        file = open('/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
+        file = open(
+            '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
         response = FileResponse(file)
         filename = file.name.split('/')[-1]
         response['Content-Disposition'] = "attachment; filename="+filename
@@ -393,8 +403,7 @@ def getZipData(request):
     response = response = FileResponse(buffer)
     response['Content-Disposition'] = 'attachment; filename="output.zip"'
     response['Content-Type'] = 'text/plain'
-    return response   
-
+    return response
 
 
 # file_path = local_settings.FILE_DOWNLOAD_PATH + path
@@ -403,11 +412,6 @@ def getZipData(request):
 #     filename = file.name.split('/')[-1]
 #     response['Content-Disposition'] = "attachment; filename="+filename
 #     response['Content-Type'] = 'text/plain'
-
-
-
-
-
 
 
 @api_view(['GET'])
@@ -432,7 +436,8 @@ def getgff(request):
     else:
         pathlist = [
             '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3']
-        file = open('/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
+        file = open(
+            '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
         response = FileResponse(file)
         filename = file.name.split('/')[-1]
         response['Content-Disposition'] = "attachment; filename="+filename
@@ -447,7 +452,8 @@ def getgff(request):
     response = response = FileResponse(buffer)
     response['Content-Disposition'] = 'attachment; filename="sequence.gff3"'
     response['Content-Type'] = 'text/plain'
-    return response   
+    return response
+
 
 @api_view(['GET'])
 def getphagemeta(request):
@@ -462,7 +468,8 @@ def getphagemeta(request):
         phage_obj = phage.objects.filter(id__in=phageids)
         phagedata = phageSerializer(phage_obj, many=True).data
     else:
-        file = open('/home/platform/phage_db/phage_api/workspace/csv_data/Download/Phage_meta_data/all_phage_meta_data.tsv', 'rb')
+        file = open(
+            '/home/platform/phage_db/phage_api/workspace/csv_data/Download/Phage_meta_data/all_phage_meta_data.tsv', 'rb')
         response = FileResponse(file)
         filename = file.name.split('/')[-1]
         response['Content-Disposition'] = "attachment; filename="+filename
@@ -477,6 +484,7 @@ def getphagemeta(request):
     response['Content-Disposition'] = 'attachment; filename="metadata.tsv"'
     response['Content-Type'] = 'text/plain'
     return response
+
 
 @api_view(['GET'])
 def downloadphagetmeta(request):
