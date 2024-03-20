@@ -24,4 +24,4 @@ class details(models.Model):
 
     def __str__(self):
 
-        return self.crustdb_main
+        return self.repeat_data_uid

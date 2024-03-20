@@ -152,17 +152,17 @@ class phage_STVViewSet(viewsets.ModelViewSet):
     pagination_class = LargeResultsSetPagination
 
 
-class phageView(APIView):
-    def get(self, request, *args, **kwargs):
-        querydict = request.query_params.dict()
-        if 'id' in querydict:
-            id = request.query_params.dict()['id']
-            queryset = phage.objects.get(id=id)
-        elif 'accid' in querydict:
-            accid = request.query_params.dict()['accid']
-            queryset = phage.objects.get(Acession_ID=accid)
-        serializer = phageSerializer(queryset)
-        return Response(serializer.data)
+# class phageView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         querydict = request.query_params.dict()
+#         if 'id' in querydict:
+#             id = request.query_params.dict()['id']
+#             queryset = phage.objects.get(id=id)
+#         elif 'accid' in querydict:
+#             accid = request.query_params.dict()['accid']
+#             queryset = phage.objects.get(Acession_ID=accid)
+#         serializer = phageSerializer(queryset)
+#         return Response(serializer.data)
 
 
 class phage_clusterView(APIView):

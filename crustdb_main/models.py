@@ -28,4 +28,4 @@ class crustdb_main(models.Model):
 
     def __str__(self):
 
-        return self.data_uid
+        return self.uniq_data_uid

@@ -37,6 +37,7 @@ from task.views import taskViewSet
 from analysis.views import analysisViewSet
 
 import phage.views
+import crustdb_main.views
 import details.views
 import phage_protein.views
 import phage_trna.views
@@ -132,12 +133,12 @@ router.register('analysis', analysisViewSet)
 router.register('task', taskViewSet)
 router.register('phage_lifestyle', phage_lifestyleViewSet)
 
-
+# database/...
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     path('api/', include('rest_framework.urls')),
-    path('phage/', phageViewSet.as_view({'get': 'list'})),
+#     path('phage/', phageViewSet.as_view({'get': 'list'})),
     path('crustdb_main/', crustdbMainViewSet.as_view({'get': 'list'})),
     path('crispr/', phage_crisprViewSet.as_view({'get': 'list'})),
     path('anticrispr/', phage_anticrisprViewSet.as_view({'get': 'list'})),
@@ -146,7 +147,11 @@ urlpatterns = [
     path('terminators/',
          phage_protein.views.phage_terminatorsViewSet.as_view({'get': 'list'})),
 
-    path('phage/detail', phage.views.phageView.as_view()),
+#     path('phage/detail', phage.views.phageView.as_view()),
+    path('crustdb_main/detail', crustdb_main.views.crustdbView.as_view()),
+#     path('crustdb_main/detail', details.views.detailsView.as_view()),
+    path('details', details.views.detailsView.as_view()),
+
     path('phage/cluster', phage.views.phage_clusterView.as_view()),
     path('phage/subcluster', phage.views.phage_subclusterView.as_view()),
     path('phage/filter/', phage.views.phage_filterView.as_view()),

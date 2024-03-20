@@ -81,3 +81,29 @@ def getZipData(request):
     response['Content-Disposition'] = 'attachment; filename="'+filename
     response['Content-Type'] = 'text/plain'
     return response
+
+class detailsView(APIView):
+    def get(self, request, *args, **kwargs):
+        querydict = request.query_params.dict()
+        # queryset = None
+        # print('============================= details views querydict', querydict)
+        if 'crustdb_main_id' in querydict: # 1st repeat
+            uniq_data_uid = request.query_params.dict()['crustdb_main_id']
+            crustdb_main_obj = crustdb_main.objects.get(uniq_data_uid = uniq_data_uid)
+            details_obj = details.objects.get(repeat_data_uid = crustdb_main_obj.uniq_data_uid+'_'+crustdb_main_obj.repeat_data_uid_list[0])
+        elif 'details_uid' in querydict:
+            # print('details views detailsView q', querydict) # {'details_uid': 'Stage44.CP_1XOH'}
+            repeat_data_uid = querydict['details_uid']
+            # print('==========', repeat_data_uid)
+            # tmp_details_obj = details.objects.filter(repeat_data_uid = repeat_data_uid).first()
+            details_obj = details.objects.get(repeat_data_uid = repeat_data_uid)
+            # L = []
+            # for i in crustdb_main_obj.repeat_data_uid_list:
+            #     L.append(crustdb_main_obj.uniq_data_uid + '_' + i)
+            # queryset = details.objects.filter(repeat_data_uid__range = set(L))
+        # elif 'accid' in querydict:
+        #     accid = request.query_params.dict()['accid']
+        #     queryset = crustdb_main.objects.get(Acession_ID=accid)
+        # serializer = detailsSerializer(queryset)
+        serializer = detailsSerializer(details_obj)
+        return Response(serializer.data)
