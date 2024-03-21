@@ -20,6 +20,8 @@ def add_data():
 
                 distance_list = []
                 for i in range(14, len(log_lines) - 1):
+                    if log_lines[i].find("Distance") == -1:
+                        continue
                     distance_list.append(log_lines[i].strip().split(' ')[-1])
 
                 details.objects.create(
