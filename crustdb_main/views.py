@@ -44,6 +44,26 @@ class crustdbView(APIView):
         serializer = crustdbSerializer(crustdb_main_obj)
         return Response(serializer.data)
 
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 30
+    page_size_query_param = 'pagesize'
+    max_page_size = 10000
+
+
+class crustdb_stereoViewSet(viewsets.ModelViewSet):
+    queryset = crustdb_main.objects.filter(ST_platform = 'Stereo-Seq')
+    serializer_class = crustdbSerializer
+    pagination_class = LargeResultsSetPagination
+
+class crustdb_cosmxViewSet(viewsets.ModelViewSet):
+    queryset = crustdb_main.objects.filter(ST_platform = 'CosMx') 
+    serializer_class = crustdbSerializer
+    pagination_class = LargeResultsSetPagination
+
+class crustdb_merfishViewSet(viewsets.ModelViewSet):
+    queryset = crustdb_main.objects.filter(ST_platform = 'Merfish')
+    serializer_class = crustdbSerializer
+    pagination_class = LargeResultsSetPagination
 
 # ===================================================== phage below ========================
 from django.shortcuts import render
@@ -76,21 +96,6 @@ from Phage_api import settings_local as local_settings
 from utils import query
 import pandas as pd
 import random
-
-
-class LargeResultsSetPagination(PageNumberPagination):
-    page_size = 30
-    page_size_query_param = 'pagesize'
-    max_page_size = 10000
-    # queryset = phage.objects.order_by('id')
-    # serializer_class = phageSerializer
-    # pagination_class = LargeResultsSetPagination
-
-    # def get(self, request):
-    #     paginator = self.pagination_class()
-    #     result_page = paginator.paginate_queryset(self.queryset, request)
-    #     serializer = phageSerializer(result_page, many=True)
-    #     return paginator.get_paginated_response(serializer.data)
 
 
 class phage_proteinViewSet(viewsets.ModelViewSet):

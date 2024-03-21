@@ -107,6 +107,10 @@ router.register('phage_antimicrobial_resistance_gene',
 router.register('phage_clusters', phage_clustersViewSet)
 router.register('phage_NCBI', phage_NCBIViewSet)
 
+router.register('crustdb_stereo', crustdb_main.views.crustdb_stereoViewSet)
+router.register('crustdb_cosmx', crustdb_main.views.crustdb_cosmxViewSet)
+router.register('crustdb_merfish', crustdb_main.views.crustdb_merfishViewSet)
+
 
 router.register('phage_Genbank', phage.views.phage_GenbankViewSet)
 router.register('phage_RefSeq', phage.views.phage_RefSeqViewSet)
@@ -149,7 +153,6 @@ urlpatterns = [
 
 #     path('phage/detail', phage.views.phageView.as_view()),
     path('crustdb_main/detail', crustdb_main.views.crustdbView.as_view()),
-#     path('crustdb_main/detail', details.views.detailsView.as_view()),
     path('details', details.views.detailsView.as_view()),
 
     path('phage/cluster', phage.views.phage_clusterView.as_view()),
@@ -161,9 +164,7 @@ urlpatterns = [
     path('phage/fasta/', phage.views.getfasta),
     path('phage/gbk/', phage.views.getgbk),
     path('phage/gff/', phage.views.getgff),  # <-- getAdata refer to
-    # e.g. crust/adata/axolotl/ getAdata
     path('crustdb_main/adata/', phage.views.getAdata),
-    # e.g. crust/adata/axolotl/ getAdata
     path('crustdb_main/zip/', details.views.getZipData),
     path('phage/meta/', phage.views.getphagemeta),
 
