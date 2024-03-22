@@ -110,7 +110,10 @@ router.register('phage_NCBI', phage_NCBIViewSet)
 router.register('crustdb_stereo', crustdb_main.views.crustdb_stereoViewSet)
 router.register('crustdb_cosmx', crustdb_main.views.crustdb_cosmxViewSet)
 router.register('crustdb_merfish', crustdb_main.views.crustdb_merfishViewSet)
-
+router.register('crustdb_human', crustdb_main.views.crustdb_humanViewSet)
+router.register('crustdb_mice', crustdb_main.views.crustdb_miceViewSet)
+router.register('crustdb_axolotls', crustdb_main.views.crustdb_axolotlsViewSet)
+# router.register('crustdb_monkey', crustdb_main.views.crustdb_monkeyViewSet)
 
 router.register('phage_Genbank', phage.views.phage_GenbankViewSet)
 router.register('phage_RefSeq', phage.views.phage_RefSeqViewSet)
