@@ -161,7 +161,8 @@ urlpatterns = [
     path('phage/cluster', phage.views.phage_clusterView.as_view()),
     path('phage/subcluster', phage.views.phage_subclusterView.as_view()),
     path('crustdb_main/filter/', crustdb_main.views.crustdb_filterView.as_view()),
-    path('phage/search/', phage.views.phage_searchView.as_view()),
+    # path('phage/search/', phage.views.phage_searchView.as_view()),
+    path('crustdb_main/search/', crustdb_main.views.crustdb_searchView.as_view()),
 
     # base id download
     path('phage/fasta/', phage.views.getfasta),
