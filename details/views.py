@@ -5,11 +5,11 @@ from io import BytesIO
 from rest_framework import viewsets
 from rest_framework.views import APIView
 
-from phage.models import phage
+# from phage.models import phage
 from crustdb_main.models import crustdb_main
 from details.models import details
 
-from phage.serializers import phageSerializer
+# from phage.serializers import phageSerializer
 from crustdb_main.serializers import crustdbSerializer
 from details.serializers import detailsSerializer
 
@@ -22,64 +22,62 @@ from phage_lifestyle.models import phage_lifestyle
 import json
 from django.db.models import Q
 from Phage_api import settings_local as local_settings
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from rest_framework.decorators import api_view
-from phage_protein.serializers import phage_crispr_Serializer
-from phage_protein.models import phage_crispr
+# from phage_protein.serializers import phage_crispr_Serializer
+# from phage_protein.models import phage_crispr
 import pandas as pd
 import random
-from datasets.models import datasets
-
+import zipfile
+import os
+# from datasets.models import datasets
 
 @api_view(['GET'])
 def getZipData(request):
     querydict = request.query_params.dict()
     filename = "output.zip"
+    # print('================================== querydict', querydict)
     # print(querydict['checkList']) # Download Stage44.CP_1XOH.zip
     if 'crustid' in querydict:
         repeat_data_uid = querydict['checkList'].strip().split(' ')[-1][:-4]
         # print('======================== repeat_data_uid', repeat_data_uid) # Stage44.CP_1XOH
         details_obj = details.objects.filter(
             repeat_data_uid=repeat_data_uid).first()
-        pathlist = [detailsSerializer(details_obj).data['zippedpath']]
-        filename = repeat_data_uid + '.zip'
-        # crustid = querydict['crustid']
-        # crustdb_obj = crustdb_main.objects.get(id=crustid)
-        # crustdb_obj.repeat_data_uid_list # ['1XOH', '1XOH', '1XOH']
-        # uniq_data_uid = crustdb_obj.uniq_data_uid
-        # pathlist = []
-        # for repeat_data_uid in crustdb_obj.repeat_data_uid_list:
-        #     details_obj = details.objects.filter(
-        #         repeat_data_uid=uniq_data_uid + '_' + repeat_data_uid).first()
-        #     pathlist.append(detailsSerializer(details_obj).data['zippedpath'])
-        # filename = uniq_data_uid + ".zip"
-    # elif 'crustids' in querydict:
-    #     crustids = querydict['crustids']
-    #     crustids = crustids.split(',')
-    #     crustdb_obj = crustdb_main.objects.filter(id__in=crustids)
-    #     crustdatas = phageSerializer(crustdb_obj, many=True).data
-    #     pathlist = []
-    #     for crustdata in crustdatas:
-    #         pathlist.append(crustdata['zippedpath'])
-    # else:
-    #     pathlist = [
-    #         '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3']
-    #     file = open(
-    #         '/home/platform/phage_db/phage_data/data/phage_sequence/phage_gff3/All.gff3', 'rb')
-    #     response = FileResponse(file)
-    #     filename = file.name.split('/')[-1]
-    #     response['Content-Disposition'] = "attachment; filename="+filename
-    #     response['Content-Type'] = 'text/plain'
-    #     return response
-    content = b''
-    for path in pathlist:
+        pathlist = [detailsSerializer(details_obj).data['datafolderpath']]
+        filename = repeat_data_uid + '.zip'    
+    elif 'crustids' in querydict:
+        crustids = querydict['crustids']
+        crustids = crustids.split(',')
+        crustdb_objs = crustdb_main.objects.filter(id__in=crustids)
+        pathlist = []
+        for crustdb_obj in crustdb_objs:
+            for repeat_data_uid in crustdb_obj.repeat_data_uid_list:
+                uid = crustdb_obj.uniq_data_uid + '_' + repeat_data_uid
+                details_obj = details.objects.get(repeat_data_uid=uid)
+                pathlist.append(detailsSerializer(details_obj).data['datafolderpath']) 
+    else: # download all
+        content = b''
+        path = '/home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/all_crustdb_data.zip'
         with open(path, 'rb') as file:
-            content = content+file.read()
-    content_bytes = content
-    buffer = BytesIO(content_bytes)
-    response = response = FileResponse(buffer)
+            content = content + file.read()
+        buffer = BytesIO(content)
+        response = FileResponse(buffer)
+        response['Content-Disposition'] = 'attachment; filename="'+filename
+        response['Content-Type'] = 'application/x-zip-compressed'
+
+        return response
+
+    s = BytesIO()
+    zf = zipfile.ZipFile(s, "w")
+    for path in pathlist: # /home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/Axolotls/Stage44.CP_1XOH/
+        for f in os.listdir(path): # e.g., Stage44.CP_1XOH.log
+            f_uid = path.split('/')[-2] # Stage44.CP_1XOH
+            # print('_', _)
+            zip_path = os.path.join(f_uid, f) # Stage44.CP_1XOH/Stage44.CP_1XOH.log
+            zf.write(path + f, zip_path) # /home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/Axolotls/Stage44.CP_1XOH/Stage44.CP_1XOH.log | Stage44.CP_1XOH/Stage44.CP_1XOH.log
+    zf.close()
+    response = HttpResponse(s.getvalue(), content_type  = "application/x-zip-compressed")
     response['Content-Disposition'] = 'attachment; filename="'+filename
-    response['Content-Type'] = 'text/plain'
     return response
 
 class detailsView(APIView):
