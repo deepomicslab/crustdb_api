@@ -31,11 +31,12 @@ import random
 import zipfile
 import os
 # from datasets.models import datasets
+from datetime import datetime
 
 @api_view(['GET'])
 def getZipData(request):
     querydict = request.query_params.dict()
-    filename = "output.zip"
+    filename = ""
     # print('================================== querydict', querydict)
     # print(querydict['checkList']) # Download Stage44.CP_1XOH.zip
     if 'crustid' in querydict:
@@ -44,7 +45,7 @@ def getZipData(request):
         details_obj = details.objects.filter(
             repeat_data_uid=repeat_data_uid).first()
         pathlist = [detailsSerializer(details_obj).data['datafolderpath']]
-        filename = repeat_data_uid + '.zip'    
+        filename = repeat_data_uid 
     elif 'crustids' in querydict:
         crustids = querydict['crustids']
         crustids = crustids.split(',')
@@ -55,17 +56,20 @@ def getZipData(request):
                 uid = crustdb_obj.uniq_data_uid + '_' + repeat_data_uid
                 details_obj = details.objects.get(repeat_data_uid=uid)
                 pathlist.append(detailsSerializer(details_obj).data['datafolderpath']) 
-    else: # download all
-        content = b''
-        path = '/home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/all_crustdb_data.zip'
-        with open(path, 'rb') as file:
-            content = content + file.read()
-        buffer = BytesIO(content)
-        response = FileResponse(buffer)
-        response['Content-Disposition'] = 'attachment; filename="'+filename
-        response['Content-Type'] = 'application/x-zip-compressed'
+        filename = "Selected"
+    # =================== Download All func is currently banned ====================
+    # else: # download all
+    #     content = b''
+    #     path = '/home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/all_crustdb_data.zip'
+    #     with open(path, 'rb') as file:
+    #         content = content + file.read()
+    #     buffer = BytesIO(content)
+    #     response = FileResponse(buffer)
+    #     filename = "All" + '.zip'
+    #     response['Content-Disposition'] = 'attachment; filename="'+filename
+    #     response['Content-Type'] = 'application/x-zip-compressed'
 
-        return response
+    #     return response
 
     s = BytesIO()
     zf = zipfile.ZipFile(s, "w")
@@ -76,7 +80,13 @@ def getZipData(request):
             zip_path = os.path.join(f_uid, f) # Stage44.CP_1XOH/Stage44.CP_1XOH.log
             zf.write(path + f, zip_path) # /home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/Axolotls/Stage44.CP_1XOH/Stage44.CP_1XOH.log | Stage44.CP_1XOH/Stage44.CP_1XOH.log
     zf.close()
+
+    now = datetime.now()
+
+    timestamp = datetime.timestamp(now)
+
     response = HttpResponse(s.getvalue(), content_type  = "application/x-zip-compressed")
+    filename += '_' + str(round(timestamp)) + '.zip'
     response['Content-Disposition'] = 'attachment; filename="'+filename
     return response
 
