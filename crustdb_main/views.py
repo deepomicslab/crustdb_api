@@ -51,17 +51,17 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 
 class crustdb_stereoViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(ST_platform = 'Stereo-Seq').order_by('id')
+    queryset = crustdb_main.objects.filter(st_platform = 'Stereo-Seq').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
 class crustdb_cosmxViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(ST_platform = 'CosMx').order_by('id')
+    queryset = crustdb_main.objects.filter(st_platform = 'CosMx').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
 class crustdb_merfishViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(ST_platform = 'Merfish').order_by('id')
+    queryset = crustdb_main.objects.filter(st_platform = 'Merfish').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
@@ -91,9 +91,9 @@ class crustdb_filterView(APIView):
         filterdatajson = json.loads(request.data['filterdata'])
         # print('=============================== phage views filterdatajson', filterdatajson)
         q_expression = Q()
-        if filterdatajson['ST_platform'] != '':
-            ST_platform = filterdatajson['ST_platform']
-            q_expression &= Q(ST_platform=ST_platform)
+        if filterdatajson['st_platform'] != '':
+            st_platform = filterdatajson['st_platform']
+            q_expression &= Q(st_platform=st_platform)
         if filterdatajson['species'] != []:
             species_list = filterdatajson['species']
             q_expression &= Q(species__in=species_list)
@@ -105,7 +105,7 @@ class crustdb_filterView(APIView):
             q_expression &= Q(developmental_stage__in=dev_stage)
         if filterdatajson['disease_stage'] != '':
             disease_stage = filterdatajson['disease_stage']
-            q_expression &= Q(disease_steps=disease_stage)
+            q_expression &= Q(disease_stage=disease_stage)
         if filterdatajson['sex'] != '' and filterdatajson['sex'] != 'all':
             sex = filterdatajson['sex']
             q_expression &= Q(sex=sex)
@@ -128,9 +128,9 @@ class crustdb_searchView(APIView):
     def get(self, request, *args, **kwargs):
         searchstr = request.query_params.dict()['search']
         q_expression = Q()
-        q_expression |= Q(ST_platform__icontains=searchstr)
+        q_expression |= Q(st_platform__icontains=searchstr)
         q_expression |= Q(species__icontains=searchstr)
-        q_expression |= Q(disease_steps__icontains=searchstr)
+        q_expression |= Q(disease_stage__icontains=searchstr)
         q_expression |= Q(developmental_stage__icontains=searchstr)
         q_expression |= Q(sex__icontains=searchstr)
         q_expression |= Q(cell_type__icontains=searchstr)

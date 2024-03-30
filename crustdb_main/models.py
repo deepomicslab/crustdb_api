@@ -3,9 +3,9 @@ from django.contrib.postgres.fields import ArrayField
 
 class crustdb_main(models.Model):
     # in displaying order
-    ST_platform = models.CharField(max_length = 200)
+    st_platform = models.CharField(max_length = 200)
     species = models.CharField(max_length = 200)
-    disease_steps = models.CharField(max_length = 200)
+    disease_stage = models.CharField(max_length = 200)
     developmental_stage = models.CharField(max_length = 200)
     sex = models.CharField(max_length = 6)
     cell_type = models.CharField(max_length = 200)
