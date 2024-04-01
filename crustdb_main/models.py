@@ -17,6 +17,7 @@ class crustdb_main(models.Model):
     slice_name = models.CharField(max_length = 200)
     # three repeat, used for model.details to get data file paths
     # full data_uid
+    conformation_num = models.IntegerField()
     repeat_data_uid_list = ArrayField(
         models.CharField(max_length = 200)
     )

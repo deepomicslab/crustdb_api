@@ -24,6 +24,7 @@ def add_data():
             repeat_data_uid_list = crustdb_main_qs.first().repeat_data_uid_list
             repeat_data_uid_list.append(repeat_data_uid)
             crustdb_main_qs.update(repeat_data_uid_list = repeat_data_uid_list)
+            crustdb_main_qs.update(conformation_num = crustdb_main_qs.first().conformation_num + 1) 
             continue 
         
         with open(local_settings.CRUSTDB_DATABASE + 'Axolotls/' + data_uid + '/' + data_uid + '.log', 'r') as f:
@@ -44,7 +45,8 @@ def add_data():
             slice_name = l[8], 
             cell_num = cell_num, 
             gene_num = gene_num, 
-            repeat_data_uid_list = repeat_data_uid_list
+            repeat_data_uid_list = repeat_data_uid_list,
+            conformation_num = 1,
         )
 
 if __name__ == "__main__":

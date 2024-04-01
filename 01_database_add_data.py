@@ -28,6 +28,6 @@ from scripts import import_crustdb_main
 import_crustdb_main.add_data()
 log(" [completed] scripts.import_crustdb_main\n")
 
-from scripts import import_details
-import_details.add_data()
-log(" [completed] scripts.import_details\n")
+# from scripts import import_details
+# import_details.add_data()
+# log(" [completed] scripts.import_details\n")
