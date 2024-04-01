@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from phage.views import phageViewSet, crustdbMainViewSet, phage_NCBIViewSet, phage_PhagesDBViewSet, phage_GPDViewSet, phage_GVDViewSet, phage_MGVViewSet, phage_TemPhDViewSet, phage_CHVDViewSet, phage_IGVDViewSet, phage_IMG_VRViewSet, phage_GOV2ViewSet, phage_STVViewSet
+from phage.views import phageViewSet, phage_NCBIViewSet, phage_PhagesDBViewSet, phage_GPDViewSet, phage_GVDViewSet, phage_MGVViewSet, phage_TemPhDViewSet, phage_CHVDViewSet, phage_IGVDViewSet, phage_IMG_VRViewSet, phage_GOV2ViewSet, phage_STVViewSet
 from phage.views import phage_crisprViewSet
 
 from phage_lifestyle.views import phage_lifestyleViewSet
@@ -145,8 +145,9 @@ urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     path('api/', include('rest_framework.urls')),
-#     path('phage/', phageViewSet.as_view({'get': 'list'})),
-    path('crustdb_main/', crustdbMainViewSet.as_view({'get': 'list'})),
+    # path('phage/', phageViewSet.as_view({'get': 'list'})),
+    # path('crustdb_main/', crustdbMainViewSet.as_view({'get': 'list'})),
+    path('crustdb_main/', crustdb_main.views.crustdbMainViewSet.as_view()),
     path('crispr/', phage_crisprViewSet.as_view({'get': 'list'})),
     path('anticrispr/', phage_anticrisprViewSet.as_view({'get': 'list'})),
     path('trna/', phage_trnasViewSet.as_view({'get': 'list'})),

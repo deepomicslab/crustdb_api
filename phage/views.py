@@ -41,17 +41,31 @@ class phageViewSet(viewsets.ModelViewSet):
         return paginator.get_paginated_response(serializer.data)
 
 
-class crustdbMainViewSet(viewsets.ModelViewSet):
-    # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
-    queryset = crustdb_main.objects.order_by('id')
-    serializer_class = crustdbSerializer
-    pagination_class = LargeResultsSetPagination
+# class crustdbMainViewSet(APIView):
+#     # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
+#     queryset = crustdb_main.objects.order_by('id')
+#     serializer_class = crustdbSerializer
+#     pagination_class = LargeResultsSetPagination
 
-    # def get(self, request):
-    #     paginator = self.pagination_class()
-    #     result_page = paginator.paginate_queryset(self.queryset, request)
-    #     serializer = crustdbSerializer(result_page, many=True)
-    #     return paginator.get_paginated_response(serializer.data)
+#     def get(self, request):
+#         # print('========================== get')
+#         # print('========================== request', request.query_params.dict())
+#         querydict = request.query_params.dict()
+#         order = ''
+#         columnKey = ''
+#         if 'order' in querydict:
+#             order = querydict['order']
+#             columnKey = querydict['columnKey']
+#             if order == 'false':
+#                 self.queryset = crustdb_main.objects.order_by('id')
+#             elif order == 'ascend':
+#                 self.queryset = crustdb_main.objects.order_by(columnKey)
+#             else: # 'descend
+#                 self.queryset = crustdb_main.objects.order_by('-'+columnKey)
+#         paginator = self.pagination_class()
+#         result_page = paginator.paginate_queryset(self.queryset, request)
+#         serializer = crustdbSerializer(result_page, many=True)
+#         return paginator.get_paginated_response(serializer.data)
 
 
 class phage_crisprViewSet(viewsets.ModelViewSet):

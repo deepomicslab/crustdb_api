@@ -24,6 +24,36 @@ import pandas as pd
 import random
 from datasets.models import datasets
 
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 30
+    page_size_query_param = 'pagesize'
+    max_page_size = 10000
+    
+class crustdbMainViewSet(APIView):
+    # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
+    queryset = crustdb_main.objects.order_by('id')
+    serializer_class = crustdbSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def get(self, request):
+        # print('========================== get')
+        # print('========================== request', request.query_params.dict())
+        querydict = request.query_params.dict()
+        order = ''
+        columnKey = ''
+        if 'order' in querydict:
+            order = querydict['order']
+            columnKey = querydict['columnKey']
+            if order == 'false':
+                self.queryset = crustdb_main.objects.order_by('id')
+            elif order == 'ascend':
+                self.queryset = crustdb_main.objects.order_by(columnKey)
+            else: # 'descend
+                self.queryset = crustdb_main.objects.order_by('-'+columnKey)
+        paginator = self.pagination_class()
+        result_page = paginator.paginate_queryset(self.queryset, request)
+        serializer = crustdbSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 class crustdbView(APIView):
     def get(self, request, *args, **kwargs):
