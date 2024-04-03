@@ -73,10 +73,10 @@ def getZipData(request):
 
     s = BytesIO()
     zf = zipfile.ZipFile(s, "w")
+    print('=================', pathlist)
     for path in pathlist: # /home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/Axolotls/Stage44.CP_1XOH/
         for f in os.listdir(path): # e.g., Stage44.CP_1XOH.log
             f_uid = path.split('/')[-2] # Stage44.CP_1XOH
-            # print('_', _)
             zip_path = os.path.join(f_uid, f) # Stage44.CP_1XOH/Stage44.CP_1XOH.log
             zf.write(path + f, zip_path) # /home/platform/project/crustdb_platform/crustdb_api/workspace/crustdb_database/Axolotls/Stage44.CP_1XOH/Stage44.CP_1XOH.log | Stage44.CP_1XOH/Stage44.CP_1XOH.log
     zf.close()

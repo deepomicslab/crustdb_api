@@ -31,7 +31,10 @@ class detailsSerializer(serializers.ModelSerializer):
         uniq_data_uid = obj.repeat_data_uid.strip()[:-5]
         species = crustdb_main.objects.filter(
             uniq_data_uid=uniq_data_uid).first().species
-
-        import re
-        species = re.findall(r'[(](.*?)[)]', species)[0]
-        return local_settings.CRUSTDB_DATABASE+species+'s/'+obj.repeat_data_uid+'/'
+        # import re
+        # species = re.findall(r'[(](.*?)[)]', species)[0]
+        if species == 'Ambystoma mexicanum (Axolotl)':
+            species = 'Axolotls'
+        elif species == 'Homo sapiens (Human)':
+            species = 'Human'
+        return local_settings.CRUSTDB_DATABASE+species+'/'+obj.repeat_data_uid+'/'

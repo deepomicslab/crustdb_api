@@ -14,7 +14,7 @@ def add_data():
 
     for line in csv_lines[1:]:
         l = line.strip().split(",")
-        data_uid = l[0]
+        data_uid = l[1]
         uniq_data_uid = data_uid.strip()[:-5]
         repeat_data_uid = data_uid.strip()[-4:]
 
@@ -26,28 +26,45 @@ def add_data():
             crustdb_main_qs.update(repeat_data_uid_list = repeat_data_uid_list)
             crustdb_main_qs.update(conformation_num = crustdb_main_qs.first().conformation_num + 1) 
             continue 
-        
-        with open(local_settings.CRUSTDB_DATABASE + 'Axolotls/' + data_uid + '/' + data_uid + '.log', 'r') as f:
-            log_lines = f.readlines()
-        cell_num = int(log_lines[3].strip().split(' ')[2])
-        gene_num = int(log_lines[4].strip().split(' ')[2])
-        repeat_data_uid_list = [repeat_data_uid]
 
-        crustdb_main.objects.create(
-            uniq_data_uid = uniq_data_uid, 
-            cell_type = l[1], 
-            slice_id = l[2], 
-            st_platform = l[3], 
-            species = l[4], 
-            developmental_stage = l[5], 
-            disease_stage = l[6], 
-            sex = l[7], 
-            slice_name = l[8], 
-            cell_num = cell_num, 
-            gene_num = gene_num, 
-            repeat_data_uid_list = repeat_data_uid_list,
-            conformation_num = 1,
-        )
+        species = l[5]
+        species_common = ''
+        if species == 'Ambystoma mexicanum (Axolotl)':
+            species_common = 'Axolotls'
+        elif species == 'Homo sapiens (Human)':
+            species_common = 'Human'
+        else:
+            print('========= Error when adding data to DB ==========')
+            print('Species', species)
+            break
+
+        try:
+            with open(local_settings.CRUSTDB_DATABASE + species_common + '/' + data_uid + '/' + data_uid + '.log', 'r') as f:
+                log_lines = f.readlines()
+
+            cell_num = int(log_lines[3].strip().split(' ')[2])
+            gene_num = int(log_lines[4].strip().split(' ')[2])
+            repeat_data_uid_list = [repeat_data_uid]
+
+            crustdb_main.objects.create(
+                doi = l[0],
+                uniq_data_uid = uniq_data_uid, 
+                cell_type = l[2], 
+                slice_id = l[3], 
+                st_platform = l[4], 
+                species = species, 
+                developmental_stage = l[6], 
+                disease_stage = l[7], 
+                sex = 'Male' if l[8] == 'M' else 'Female', 
+                slice_name = l[9], 
+                cell_num = cell_num, 
+                gene_num = gene_num, 
+                repeat_data_uid_list = repeat_data_uid_list,
+                conformation_num = 1,
+            )
+        except Exception as e:
+            print(e)
+            
 
 if __name__ == "__main__":
     add_data()

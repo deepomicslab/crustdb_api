@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 class crustdb_main(models.Model):
-    # in displaying order
     st_platform = models.CharField(max_length = 200)
     species = models.CharField(max_length = 200)
     disease_stage = models.CharField(max_length = 200)
@@ -21,6 +20,7 @@ class crustdb_main(models.Model):
     repeat_data_uid_list = ArrayField(
         models.CharField(max_length = 200)
     )
+    doi = models.CharField(max_length = 200)
 
     class Meta:
         db_table = 'crustdb_main'

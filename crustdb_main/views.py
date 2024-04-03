@@ -41,7 +41,7 @@ class crustdbMainViewSet(APIView):
         querydict = request.query_params.dict()
         order = ''
         columnKey = ''
-        if 'order' in querydict:
+        if 'order' in querydict and 'columnKey' in querydict and querydict['columnKey'] != '':
             order = querydict['order']
             columnKey = querydict['columnKey']
             if order == 'false':
