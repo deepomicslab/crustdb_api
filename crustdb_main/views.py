@@ -40,7 +40,8 @@ class crustdbMainViewSet(APIView):
         # print('========================== request', request.query_params.dict())
         querydict = request.query_params.dict()
 
-        if 'filter' in querydict:
+        if 'filter' in querydict and querydict['filter'] != '':
+            # print('=========== querydict[\'filter\']', querydict['filter'])
             filter = json.loads(querydict['filter'])
             # print('================== filter', filter)
             # if filter['st_platform'] or filter['species'] or filter['disease_stage'] or filter['developmental_stage'] or filter['sex'] or filter['cell_type']:

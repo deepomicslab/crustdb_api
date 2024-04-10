@@ -39,6 +39,7 @@ from analysis.views import analysisViewSet
 import phage.views
 import crustdb_main.views
 import details.views
+import publication.views
 import phage_protein.views
 import phage_trna.views
 import phage_clusters.views
@@ -148,6 +149,7 @@ urlpatterns = [
     # path('phage/', phageViewSet.as_view({'get': 'list'})),
     # path('crustdb_main/', crustdbMainViewSet.as_view({'get': 'list'})),
     path('crustdb_main/', crustdb_main.views.crustdbMainViewSet.as_view()),
+    path('dataset/', publication.views.publicationViewSet.as_view()),
     path('crispr/', phage_crisprViewSet.as_view({'get': 'list'})),
     path('anticrispr/', phage_anticrisprViewSet.as_view({'get': 'list'})),
     path('trna/', phage_trnasViewSet.as_view({'get': 'list'})),

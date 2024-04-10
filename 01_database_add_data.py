@@ -24,14 +24,14 @@ def log(log_str):
 # import_lifestyle.add_data()
 # log(" [completed] scripts.import_lifestyle\n")
 
-from scripts import import_crustdb_main
-import_crustdb_main.add_data()
-log(" [completed] scripts.import_crustdb_main\n")
+# from scripts import import_crustdb_main
+# import_crustdb_main.add_data()
+# log(" [completed] scripts.import_crustdb_main\n")
 
-from scripts import import_details
-import_details.add_data()
-log(" [completed] scripts.import_details\n")
+# from scripts import import_details
+# import_details.add_data()
+# log(" [completed] scripts.import_details\n")
 
-# from scripts import import_publication
-# import_publication.add_data()
-# log(" [completed] scripts.import_publication\n")
+from scripts import import_publication
+import_publication.add_data()
+log(" [completed] scripts.import_publication\n")
