@@ -84,6 +84,15 @@ class crustdbMainViewSet(APIView):
         result_page = paginator.paginate_queryset(self.queryset, request)
         serializer = crustdbSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+    
+class crustdb_datasetView(APIView):
+    def get(self, request, *args, **kwargs):
+        querydict = request.query_params.dict()
+        if 'doi' in querydict:
+            doi = querydict['doi']
+            crustdb_main_objs = crustdb_main.objects.filter(doi = doi).order_by('id')
+        serializer = crustdbSerializer(crustdb_main_objs, many=True)
+        return Response(serializer.data)
 
 class crustdbView(APIView):
     def get(self, request, *args, **kwargs):
@@ -201,3 +210,4 @@ class crustdb_searchView(APIView):
             total_queryset, request, view=self)
         serializer = crustdbSerializer(paginated_crusts, many=True)
         return paginator.get_paginated_response(serializer.data)
+    

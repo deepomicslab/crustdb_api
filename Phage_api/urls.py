@@ -159,12 +159,14 @@ urlpatterns = [
 
 #     path('phage/detail', phage.views.phageView.as_view()),
     path('crustdb_main/detail', crustdb_main.views.crustdbView.as_view()),
+    path('dataset/detail/', publication.views.detailView.as_view()),
+    path('crustdb_main/dataset/', crustdb_main.views.crustdb_datasetView.as_view()),
+
     path('details', details.views.detailsView.as_view()),
 
     path('phage/cluster', phage.views.phage_clusterView.as_view()),
     path('phage/subcluster', phage.views.phage_subclusterView.as_view()),
     path('crustdb_main/filter/', crustdb_main.views.crustdb_filterView.as_view()),
-    # path('phage/search/', phage.views.phage_searchView.as_view()),
     path('crustdb_main/search/', crustdb_main.views.crustdb_searchView.as_view()),
 
     # base id download
