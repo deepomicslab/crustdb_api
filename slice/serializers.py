@@ -75,38 +75,6 @@ class sliceSerializer(serializers.ModelSerializer):
         return crustdb_main.objects.filter(slice_id = obj.slice_id).aggregate(Sum('cell_num'))['cell_num__sum']
     
     def get_adata(self, obj):
-        # print('=========================== obj', obj.slice_id)
-
-        # for adata in adata_map.values():
-        #     print(adata)
-        #     file_type = adata.split('.')[-1]
-        #     print('========== file type', file_type)
-        #     if file_type == 'h5ad':
-        #         # continue
-        #         import scanpy as sc
-        #         adata = sc.read_h5ad(local_settings.CRUSTDB_DATABASE+'adata/'+adata)
-        #         adata.obs['x']=adata.obsm['spatial'][:,0]
-        #         adata.obs['y']=adata.obsm['spatial'][:,1]
-        #         df = adata.obs[['Annotation', 'x', 'y']]
-        #         df.columns = ['annotation', 'x', 'y']
-        #         # L = pd.DataFrame({
-        #         #     'x': [1, 2, 3, 4, 5],
-        #         #     'y': [10, 2, 58, 6, 99],
-        #         #     'annotation': ['cp', 'cp', 'ale', 'ale', 'ale']
-        #         # })
-        #     elif file_type == 'csv':
-        #         import pandas as pd
-        #         df = pd.read_csv(local_settings.CRUSTDB_DATABASE+'adata/'+adata, sep=',')[['CenterX_global_px', 'CenterY_global_px', 'cell_type']].to_numpy()
-        #         df[:, 0] -= min(df[:, 0])
-        #         df[:, 1] -= min(df[:, 1])
-        #         df = pd.DataFrame(df)
-        #         df.columns = ['x', 'y', 'annotation']
-        #         # print(df)
-        #     # print('-------------', adata)
-        #     print('x', max(df['x']), min(df['x']), max(df['x']) - min(df['x']))
-        #     print('y', max(df['y']), min(df['y']), max(df['y']) - min(df['y']))
-        #     print('# of spots', len(df))
-
         file_type = adata_map[obj.slice_id].split('.')[-1]
         if file_type == 'h5ad':
             import scanpy as sc

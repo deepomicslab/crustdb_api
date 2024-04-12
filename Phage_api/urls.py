@@ -163,7 +163,8 @@ urlpatterns = [
      path('crustdb_main/detail', crustdb_main.views.crustdbView.as_view()),
      path('dataset/detail/', publication.views.detailView.as_view()),
      path('slice/detail/', slice.views.detailView.as_view()),
-     path('crustdb_main/dataset/', crustdb_main.views.crustdb_datasetView.as_view()),
+     path('slice/dataset/', slice.views.datasetView.as_view()),
+     # path('crustdb_main/dataset/', crustdb_main.views.crustdb_datasetView.as_view()),
      path('crustdb_main/slice/', crustdb_main.views.crustdb_sliceView.as_view()),
      path('slice/adata/', slice.views.adataView.as_view()),
 

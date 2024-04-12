@@ -10,6 +10,7 @@ import json
 
 from slice.models import slice
 from slice.serializers import sliceSerializer
+from crustdb_main.models import crustdb_main
 
 class LargeResultsSetPagination(PageNumberPagination):
     page_size = 30
@@ -23,12 +24,22 @@ class sliceViewSet(APIView):
 
     def get(self, request):
         querydict = request.query_params.dict()
-        # print('=================== querydict', querydict)
         queryset = self.queryset.order_by('id')
+        # print('============ serialized_data', serialized_data)
+
+        # print('----------- ', len(queryset))
+        if 'slices' in querydict:
+            # print('=================== querydict', querydict)
+            slices = json.loads(querydict['slices'])['data']
+            # print('--------------- slices', slices)
+            # print('========== sorted_data', sorted_data)
+            queryset = self.queryset.filter(slice_id__in = slices).order_by('id')
+        # print('----------- ', len(queryset))
+
         serializer = self.serializer_class(queryset, many=True)
         serialized_data = serializer.data
         sorted_data = serialized_data
-        # print('============ serialized_data', serialized_data)
+
         if 'sorter' in querydict and querydict['sorter'] != '':
             sorter = json.loads(querydict['sorter'])
             columnKey = sorter['columnKey']
@@ -53,6 +64,22 @@ class detailView(APIView):
             slice_obj = slice.objects.get(id = id)
         serializer = sliceSerializer(slice_obj)
         return Response(serializer.data)
+    
+class datasetView(APIView):
+    def get(self, request, *args, **kwargs):
+        querydict = request.query_params.dict()
+        if 'doi' in querydict:
+            doi = querydict['doi']
+            # print('================= doi', doi)
+            slices = crustdb_main.objects.filter(doi = doi).order_by('slice_id').distinct('slice_id')
+            # print('================ slices', slices)
+        serializer = sliceSerializer(slices, many=True)
+        slices = [i['slice_id'] for i in serializer.data]
+        # print('-------------- slices', slices)
+        # print('============== serializer.data', [i['publication_doi'] for i in serializer.data])
+        return Response(slices)
+        # print('============== serializer.data', serializer.data)
+        # return Response(serializer.data)
     
 class adataView(APIView):
     def get(self, request, *args, **kwargs):
