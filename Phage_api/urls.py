@@ -1,17 +1,17 @@
 """Phage_api URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.1/topics/http/urls/
+     https://docs.djangoproject.com/en/4.1/topics/http/urls/
 Examples:
 Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+     1. Add an import:  from my_app import views
+     2. Add a URL to urlpatterns:  path('', views.home, name='home')
 Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+     1. Add an import:  from other_app.views import Home
+     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+     1. Import the include() function: from django.urls import include, path
+     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 # ['Genbank', 'RefSeq', 'DDBJ', 'EMBL', 'tpg', 'PhagesDB', 'GPD', 'GVD', 'MGV', 'TemPhD','CHVD','IGVD','IMG VR','GOV2','STV',]
 from django.contrib import admin
@@ -55,13 +55,13 @@ router.register('phage_protein_NCBI', phage_protein_NCBIViewSet)
 
 
 router.register('phage_protein_Genbank',
-                phage_protein.views.phage_protein_GenbankViewSet)
+               phage_protein.views.phage_protein_GenbankViewSet)
 router.register('phage_protein_RefSeq',
-                phage_protein.views.phage_protein_RefSeqViewSet)
+               phage_protein.views.phage_protein_RefSeqViewSet)
 router.register('phage_protein_DDBJ',
-                phage_protein.views.phage_protein_DDBJViewSet)
+               phage_protein.views.phage_protein_DDBJViewSet)
 router.register('phage_protein_EMBL',
-                phage_protein.views.phage_protein_EMBLViewSet)
+               phage_protein.views.phage_protein_EMBLViewSet)
 
 router.register('phage_protein_PhagesDB', phage_protein_PhagesDBViewSet)
 router.register('phage_protein_GPD', phage_protein_GPDViewSet)
@@ -163,7 +163,7 @@ urlpatterns = [
      path('crustdb_main/detail', crustdb_main.views.crustdbView.as_view()),
      path('dataset/detail/', publication.views.detailView.as_view()),
      path('slice/detail/', slice.views.detailView.as_view()),
-     path('slice/dataset/', slice.views.datasetView.as_view()),
+     # path('slice/dataset/', slice.views.datasetView.as_view()),
      # path('crustdb_main/dataset/', crustdb_main.views.crustdb_datasetView.as_view()),
      path('crustdb_main/slice/', crustdb_main.views.crustdb_sliceView.as_view()),
      path('slice/adata/', slice.views.adataView.as_view()),

@@ -52,49 +52,53 @@ adata_map = {
 
 class sliceSerializer(serializers.ModelSerializer):
 
-    publication_doi = serializers.SerializerMethodField()
-    n_cell_types = serializers.SerializerMethodField()
-    n_conformations = serializers.SerializerMethodField()
-    n_cells = serializers.SerializerMethodField()
-    adata = serializers.SerializerMethodField()
+    # publication_doi = serializers.SerializerMethodField()
+    # n_cell_types = serializers.SerializerMethodField()
+    # n_conformations = serializers.SerializerMethodField()
+    # n_cells = serializers.SerializerMethodField()
+    # adata = serializers.SerializerMethodField()
+    adata_path = serializers.SerializerMethodField()
     
     class Meta:
         model = slice
         fields = '__all__'
 
-    def get_publication_doi(self, obj):
-        return crustdb_main.objects.filter(slice_id = obj.slice_id).first().doi
+    # def get_publication_doi(self, obj):
+    #     return crustdb_main.objects.filter(slice_id = obj.slice_id).first().doi
 
-    def get_n_cell_types(self, obj):
-        return len(crustdb_main.objects.filter(slice_id = obj.slice_id).order_by('cell_type').distinct('cell_type'))
+    # def get_n_cell_types(self, obj):
+    #     return len(crustdb_main.objects.filter(slice_id = obj.slice_id).order_by('cell_type').distinct('cell_type'))
     
-    def get_n_conformations(self, obj):
-        return len(crustdb_main.objects.filter(slice_id = obj.slice_id))
+    # def get_n_conformations(self, obj):
+    #     return len(crustdb_main.objects.filter(slice_id = obj.slice_id))
     
-    def get_n_cells(self, obj):
-        return crustdb_main.objects.filter(slice_id = obj.slice_id).aggregate(Sum('cell_num'))['cell_num__sum']
+    # def get_n_cells(self, obj):
+    #     return crustdb_main.objects.filter(slice_id = obj.slice_id).aggregate(Sum('cell_num'))['cell_num__sum']
+
+    def get_adata_path(self, obj):
+        return local_settings.CRUSTDB_DATABASE+'adata/'+adata_map[obj.slice_id]
     
-    def get_adata(self, obj):
-        file_type = adata_map[obj.slice_id].split('.')[-1]
-        if file_type == 'h5ad':
-            import scanpy as sc
-            adata = sc.read_h5ad(local_settings.CRUSTDB_DATABASE+'adata/'+adata_map[obj.slice_id])
-            adata.obs['x']=adata.obsm['spatial'][:,0]
-            adata.obs['y']=adata.obsm['spatial'][:,1]
-            df = adata.obs[['Annotation', 'x', 'y']]
-            df.columns = ['annotation', 'x', 'y']
-            # L = pd.DataFrame({
-            #     'x': [1, 2, 3, 4, 5],
-            #     'y': [10, 2, 58, 6, 99],
-            #     'annotation': ['cp', 'cp', 'ale', 'ale', 'ale']
-            # })
-        elif file_type == 'csv':
-            import pandas as pd
-            df = pd.read_csv(local_settings.CRUSTDB_DATABASE+'adata/'+adata_map[obj.slice_id], sep=',')[['CenterX_global_px', 'CenterY_global_px', 'cell_type']].to_numpy()
-            df[:, 0] -= min(df[:, 0])
-            df[:, 1] -= min(df[:, 1])
-            df = pd.DataFrame(df)
-            df.columns = ['x', 'y', 'annotation']
-        else:
-            print('Error in slice.serializers.get_adata')
-        return df
+    # def get_adata(self, obj):
+    #     file_type = adata_map[obj.slice_id].split('.')[-1]
+    #     if file_type == 'h5ad':
+    #         import scanpy as sc
+    #         adata = sc.read_h5ad(local_settings.CRUSTDB_DATABASE+'adata/'+adata_map[obj.slice_id])
+    #         adata.obs['x']=adata.obsm['spatial'][:,0]
+    #         adata.obs['y']=adata.obsm['spatial'][:,1]
+    #         df = adata.obs[['Annotation', 'x', 'y']]
+    #         df.columns = ['annotation', 'x', 'y']
+    #         # L = pd.DataFrame({
+    #         #     'x': [1, 2, 3, 4, 5],
+    #         #     'y': [10, 2, 58, 6, 99],
+    #         #     'annotation': ['cp', 'cp', 'ale', 'ale', 'ale']
+    #         # })
+    #     elif file_type == 'csv':
+    #         import pandas as pd
+    #         df = pd.read_csv(local_settings.CRUSTDB_DATABASE+'adata/'+adata_map[obj.slice_id], sep=',')[['CenterX_global_px', 'CenterY_global_px', 'cell_type']].to_numpy()
+    #         df[:, 0] -= min(df[:, 0])
+    #         df[:, 1] -= min(df[:, 1])
+    #         df = pd.DataFrame(df)
+    #         df.columns = ['x', 'y', 'annotation']
+    #     else:
+    #         print('Error in slice.serializers.get_adata')
+    #     return df
