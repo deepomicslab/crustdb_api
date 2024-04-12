@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'crustdb_main',
     'details',
     'publication',
+    'slice',
     
     'phage', #
     'phage_protein', #

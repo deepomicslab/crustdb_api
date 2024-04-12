@@ -32,6 +32,10 @@ def log(log_str):
 # import_details.add_data()
 # log(" [completed] scripts.import_details\n")
 
-from scripts import import_publication
-import_publication.add_data()
-log(" [completed] scripts.import_publication\n")
+# from scripts import import_publication
+# import_publication.add_data()
+# log(" [completed] scripts.import_publication\n")
+
+# from scripts import import_slice
+# import_slice.add_data()
+# log(" [completed] scripts.import_slice\n")

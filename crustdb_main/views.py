@@ -23,6 +23,7 @@ from phage_protein.models import phage_crispr
 import pandas as pd
 import random
 from datasets.models import datasets
+from slice.models import slice
 
 class LargeResultsSetPagination(PageNumberPagination):
     page_size = 30
@@ -94,6 +95,67 @@ class crustdb_datasetView(APIView):
         serializer = crustdbSerializer(crustdb_main_objs, many=True)
         return Response(serializer.data)
 
+class crustdb_sliceView(APIView):
+    # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
+    queryset = crustdb_main.objects.order_by('id')
+    serializer_class = crustdbSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def get(self, request):
+        # print('========================== get')
+        # print('========================== request', request.query_params.dict())
+        querydict = request.query_params.dict()
+
+        if 'slice_id' in querydict:
+            slice_id = slice.objects.get(id = querydict['slice_id']).slice_id
+            self.queryset = crustdb_main.objects.filter(slice_id = slice_id).order_by('id')
+        else:
+            self.queryset = crustdb_main.objects.order_by('id')
+
+        if 'filter' in querydict and querydict['filter'] != '':
+            q_expression = Q()
+            # print('=========== querydict[\'filter\']', querydict['filter'])
+            filter = json.loads(querydict['filter'])
+            # print('================== filter', filter)
+            # if filter['st_platform'] or filter['species'] or filter['disease_stage'] or filter['developmental_stage'] or filter['sex'] or filter['cell_type']:
+                # print(filter['species'], filter['species'] == None)
+            if filter['st_platform']:
+                q_expression &= Q(st_platform__in = filter['st_platform'])
+            if filter['species']:
+                q_expression &= Q(species__in = filter['species'])
+            if filter['disease_stage']:
+                q_expression &= Q(disease_stage__in = filter['disease_stage'])
+            if filter['developmental_stage']:
+                q_expression &= Q(developmental_stage__in = filter['developmental_stage'])
+            if filter['sex']:
+                q_expression &= Q(sex__in = filter['sex'])
+            if filter['cell_type']:
+                q_expression &= Q(cell_type__in = filter['cell_type'])
+                # print('============ q_expression', q_expression)
+            # print('=======length', len(self.queryset.all()))
+            self.queryset = self.queryset.filter(q_expression).order_by('id')
+            # print('=======length', len(self.queryset.all()))
+
+
+        order = ''
+        columnKey = ''
+        if 'sorter' in querydict and querydict['sorter'] != '':
+            sorter = json.loads(querydict['sorter'])
+            order = sorter['order']
+            columnKey = sorter['columnKey']
+            # print('===============', order, columnKey)
+            if order == 'false':
+                self.queryset = self.queryset.order_by('id')
+            elif order == 'ascend':
+                self.queryset = self.queryset.order_by(columnKey)
+            else: # 'descend
+                self.queryset = self.queryset.order_by('-'+columnKey)
+
+        paginator = self.pagination_class()
+        result_page = paginator.paginate_queryset(self.queryset, request)
+        serializer = crustdbSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+    
 class crustdbView(APIView):
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
