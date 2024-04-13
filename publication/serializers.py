@@ -14,6 +14,7 @@ class publicationSerializer(serializers.ModelSerializer):
     n_cell_types = serializers.SerializerMethodField()
     n_conformations = serializers.SerializerMethodField()
     n_cells = serializers.SerializerMethodField()
+    species = serializers.SerializerMethodField()
     
     class Meta:
         model = publication
@@ -30,3 +31,6 @@ class publicationSerializer(serializers.ModelSerializer):
     
     def get_n_cells(self, obj):
         return crustdb_main.objects.filter(doi = obj.doi).aggregate(Sum('cell_num'))['cell_num__sum']
+    
+    def get_species(self, obj):
+        return crustdb_main.objects.filter(doi = obj.doi).first().species

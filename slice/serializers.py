@@ -58,6 +58,7 @@ class sliceSerializer(serializers.ModelSerializer):
     # n_cells = serializers.SerializerMethodField()
     # adata = serializers.SerializerMethodField()
     adata_path = serializers.SerializerMethodField()
+    species = serializers.SerializerMethodField()
     
     class Meta:
         model = slice
@@ -77,6 +78,9 @@ class sliceSerializer(serializers.ModelSerializer):
 
     def get_adata_path(self, obj):
         return local_settings.CRUSTDB_DATABASE+'adata/'+adata_map[obj.slice_id]
+    
+    def get_species(self, obj):
+        return crustdb_main.objects.filter(slice_id = obj.slice_id).first().species
     
     # def get_adata(self, obj):
     #     file_type = adata_map[obj.slice_id].split('.')[-1]
