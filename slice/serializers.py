@@ -33,20 +33,108 @@ color_map = {
 }
 
 adata_map = {
-    'Stage44_telencephalon_rep2_FP200000239BL_E4': 'Stage44.h5ad',
-    'Meta_telencephalon_rep1_DP8400015234BLB2_1': 'Meta.h5ad',
-    'Injury_control_FP200000239BL_E3': 'Control_Juv.h5ad',
-    'Adult_telencephalon_rep2_DP8400015234BLA3_1': 'Adult.h5ad',
-    'Stage57_telencephalon_rep2_DP8400015649BRD5_1': 'Stage57.h5ad',
-    'Stage54_telencephalon_rep2_DP8400015649BRD6_2': 'Stage54.h5ad',
-    'Lung5_Rep1': 'Lung5_Rep1.cellmeta.csv',
-    'Lung5_Rep2': 'Lung5_Rep2.cellmeta.csv',
-    'Lung5_Rep3': 'Lung5_Rep3.cellmeta.csv',
-    'Lung6': 'Lung6.cellmeta.csv',
-    'Lung9_Rep1': 'Lung9_Rep1.cellmeta.csv',
-    'Lung9_Rep2': 'Lung9_Rep2.cellmeta.csv',
-    'Lung12': 'Lung12.cellmeta.csv',
-    'Lung13': 'Lung13.cellmeta.csv',
+    # h5ad
+    'Stage44_telencephalon_rep2_FP200000239BL_E4': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Stage44.h5ad',
+        'annotation': 'Annotation',
+    },
+    'Meta_telencephalon_rep1_DP8400015234BLB2_1': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Meta.h5ad',
+        'annotation': 'Annotation',
+    },
+    'Injury_control_FP200000239BL_E3': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Control_Juv.h5ad',
+        'annotation': 'Annotation',
+    },
+    'Adult_telencephalon_rep2_DP8400015234BLA3_1': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Adult.h5ad',
+        'annotation': 'Annotation',
+    },
+    'Stage57_telencephalon_rep2_DP8400015649BRD5_1': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Stage57.h5ad',
+        'annotation': 'Annotation',
+    },
+    'Stage54_telencephalon_rep2_DP8400015649BRD6_2': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Stage54.h5ad',
+        'annotation': 'Annotation',
+    },
+    'SS200000108BR_A3A4': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'E16.5_E1S3_cell_bin.h5ad',
+        'annotation': 'annotation',
+    },
+    'SS200000108BR_A3A4_scgem_Brain': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'E16.5_E1S3_cell_bin_whole_brain.h5ad',
+        'annotation': 'annotation',
+    },
+
+    # csv
+    'Lung5_Rep1': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Lung5_Rep1.cellmeta.csv',
+        'x': 'CenterX_global_px',
+        'y': 'CenterY_global_px',
+        'annotation': 'cell_type',
+    },
+    'Lung5_Rep2': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Lung5_Rep2.cellmeta.csv',
+        'x': 'CenterX_global_px',
+        'y': 'CenterY_global_px',
+        'annotation': 'cell_type',
+    },
+    'Lung5_Rep3': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Lung5_Rep3.cellmeta.csv',
+        'x': 'CenterX_global_px',
+        'y': 'CenterY_global_px',
+        'annotation': 'cell_type',
+    },
+    'Lung6': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Lung6.cellmeta.csv',
+        'x': 'CenterX_global_px',
+        'y': 'CenterY_global_px',
+        'annotation': 'cell_type',
+    },
+    'Lung9_Rep1': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Lung9_Rep1.cellmeta.csv',
+        'x': 'CenterX_global_px',
+        'y': 'CenterY_global_px',
+        'annotation': 'cell_type',
+    },
+    'Lung9_Rep2': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Lung9_Rep2.cellmeta.csv',
+        'x': 'CenterX_global_px',
+        'y': 'CenterY_global_px',
+        'annotation': 'cell_type',
+    },
+    'Lung12': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Lung12.cellmeta.csv',
+        'x': 'CenterX_global_px',
+        'y': 'CenterY_global_px',
+        'annotation': 'cell_type',
+    },
+    'Lung13': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'Lung13.cellmeta.csv',
+        'x': 'CenterX_global_px',
+        'y': 'CenterY_global_px',
+        'annotation': 'cell_type',
+    },
+    # cav with feat
+    'CancerousLiver': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'liver_cellmeta.csv',
+        'x': 'x_slide_mm',
+        'y': 'y_slide_mm',
+        'annotation': 'cellType',
+        'feat': {
+            'Run_Tissue_name': 'CancerousLiver',
+        },
+    },
+    'NormalLiver': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'liver_cellmeta.csv',
+        'x': 'x_slide_mm',
+        'y': 'y_slide_mm',
+        'annotation': 'cellType',
+        'feat': {
+            'Run_Tissue_name': 'NormalLiver',
+        },
+    },
 }
 
 
@@ -59,7 +147,7 @@ class sliceSerializer(serializers.ModelSerializer):
     # adata = serializers.SerializerMethodField()
     adata_path = serializers.SerializerMethodField()
     species = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = slice
         fields = '__all__'
@@ -69,19 +157,19 @@ class sliceSerializer(serializers.ModelSerializer):
 
     # def get_n_cell_types(self, obj):
     #     return len(crustdb_main.objects.filter(slice_id = obj.slice_id).order_by('cell_type').distinct('cell_type'))
-    
+
     # def get_n_conformations(self, obj):
     #     return len(crustdb_main.objects.filter(slice_id = obj.slice_id))
-    
+
     # def get_n_cells(self, obj):
     #     return crustdb_main.objects.filter(slice_id = obj.slice_id).aggregate(Sum('cell_num'))['cell_num__sum']
 
     def get_adata_path(self, obj):
-        return local_settings.CRUSTDB_DATABASE+'adata/'+adata_map[obj.slice_id]
-    
+        return adata_map[obj.slice_id]
+
     def get_species(self, obj):
-        return crustdb_main.objects.filter(slice_id = obj.slice_id).first().species
-    
+        return crustdb_main.objects.filter(slice_id=obj.slice_id).first().species
+
     # def get_adata(self, obj):
     #     file_type = adata_map[obj.slice_id].split('.')[-1]
     #     if file_type == 'h5ad':
