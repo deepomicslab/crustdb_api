@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'details',
     'publication',
     'slice',
+    'celltype',
     
     'phage', #
     'phage_protein', #

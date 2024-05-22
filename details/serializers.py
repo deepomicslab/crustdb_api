@@ -31,10 +31,21 @@ class detailsSerializer(serializers.ModelSerializer):
         uniq_data_uid = obj.repeat_data_uid.strip()[:-5]
         species = crustdb_main.objects.filter(
             uniq_data_uid=uniq_data_uid).first().species
+        slice_id = crustdb_main.objects.filter(
+            uniq_data_uid=uniq_data_uid).first().slice_id
         # import re
         # species = re.findall(r'[(](.*?)[)]', species)[0]
+        species_common = ''
         if species == 'Ambystoma mexicanum (Axolotl)':
-            species = 'Axolotls'
+            species_common = 'Axolotls'
         elif species == 'Homo sapiens (Human)':
-            species = 'Human'
-        return local_settings.CRUSTDB_DATABASE+species+'/'+obj.repeat_data_uid+'/'
+            if 'Lung' in slice_id:
+                species_common = 'Lung'
+            elif 'Liver' in slice_id:
+                species_common = 'Liver'
+        elif species == 'Mus musculus (Mice)':
+            if 'Brain' in slice_id:
+                species_common = 'Mice_Brain'
+            else:
+                species_common = 'Mice'
+        return local_settings.CRUSTDB_DATABASE+species_common+'/'+obj.repeat_data_uid+'/'

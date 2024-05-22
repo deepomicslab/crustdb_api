@@ -41,6 +41,7 @@ import crustdb_main.views
 import details.views
 import publication.views
 import slice.views
+import celltype.views
 import phage_protein.views
 import phage_trna.views
 import phage_clusters.views
@@ -152,6 +153,7 @@ urlpatterns = [
      path('crustdb_main/', crustdb_main.views.crustdbMainViewSet.as_view()),
      path('dataset/', publication.views.publicationViewSet.as_view()),
      path('slice/', slice.views.sliceViewSet.as_view()),
+     path('celltype/', celltype.views.celltypeViewSet.as_view()),
      path('crispr/', phage_crisprViewSet.as_view({'get': 'list'})),
      path('anticrispr/', phage_anticrisprViewSet.as_view({'get': 'list'})),
      path('trna/', phage_trnasViewSet.as_view({'get': 'list'})),
@@ -166,6 +168,7 @@ urlpatterns = [
      # path('slice/dataset/', slice.views.datasetView.as_view()),
      # path('crustdb_main/dataset/', crustdb_main.views.crustdb_datasetView.as_view()),
      path('crustdb_main/slice/', crustdb_main.views.crustdb_sliceView.as_view()),
+     path('crustdb_main/celltype/', crustdb_main.views.crustdb_celltypeView.as_view()),
      path('slice/adata/', slice.views.adataView.as_view()),
 
      path('details', details.views.detailsView.as_view()),
