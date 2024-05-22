@@ -1,7 +1,4 @@
-from scripts import import_crustdb_main
-from scripts import import_slice
-from scripts import import_publication
-from scripts import import_details
+from scripts import import_crustdb_main, import_slice, import_publication, import_details, import_celltype
 from datetime import timedelta
 import datetime
 
@@ -30,5 +27,8 @@ def log(log_str):
 # import_publication.add_data()
 # log(" [completed] scripts.import_publication\n")
 
-import_slice.add_data()
-log(" [completed] scripts.import_slice\n")
+# import_slice.add_data()
+# log(" [completed] scripts.import_slice\n")
+
+import_celltype.add_data()
+log(" [completed] scripts.import_celltype\n")

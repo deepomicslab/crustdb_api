@@ -222,17 +222,27 @@ class crustdb_celltypeView(APIView):
         serializer = crustdbSerializer(result_page, many=True)
         # print('serializer', serializer.data)
 
+        num_arr = ['cell_num', 'gene_num', 'conformation_num']
         common_items = []
         uncommon_items = []
+        common_item_values = {}
         keys = list(serializer.data[0].keys())
         for k in keys:
             tmp = np.array([i[k] for i in serializer.data])
-            tmp = np.unique(np.where(tmp == None, 'None', tmp))
-            if len(tmp) == 1:
+            if k in num_arr:
                 common_items.append(k)
-            else:
+                common_item_values[k] = np.sum([int(_) for _ in tmp])
                 uncommon_items.append(k)
-        return paginator.get_paginated_response([serializer.data, common_items, uncommon_items])
+            else:
+                tmp = np.unique(np.where(tmp == None, 'None', tmp))
+                if len(tmp) == 1:
+                    common_items.append(k)
+                    common_item_values[k] = tmp[0]
+                else:
+                    uncommon_items.append(k)
+            
+        
+        return paginator.get_paginated_response([serializer.data, common_items, uncommon_items, common_item_values])
 
 
 class crustdbView(APIView):
