@@ -14,22 +14,9 @@ def get_current_datetime():
 
 
 def log(log_str):
-    f = open(local_settings.TASKLOG+"additional_scripts/" +
-             "01_database_add_data.log", "a")
+    f = open(local_settings.TASKLOG+"additional_scripts/" + "01_database_add_data.log", "a")
     f.write(get_current_datetime() + log_str)
     f.close()
-
-# from scripts import import_datasets
-# import_datasets.add_data()
-# log(" [completed] scripts.import_datasets\n")
-
-# from scripts import import_phage
-# import_phage.add_data()
-# log(" [completed] scripts.import_phage\n")
-
-# from scripts import import_lifestyle
-# import_lifestyle.add_data()
-# log(" [completed] scripts.import_lifestyle\n")
 
 # # Remember to use 06_check_convergence_fail.ipynb to check
 # import_crustdb_main.add_data()

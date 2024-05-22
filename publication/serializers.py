@@ -27,7 +27,8 @@ class publicationSerializer(serializers.ModelSerializer):
         return len(crustdb_main.objects.filter(doi = obj.doi).order_by('cell_type').distinct('cell_type'))
     
     def get_n_conformations(self, obj):
-        return len(crustdb_main.objects.filter(doi = obj.doi))
+        # return len(crustdb_main.objects.filter(doi = obj.doi))
+        return crustdb_main.objects.filter(doi = obj.doi).aggregate(Sum('conformation_num'))['conformation_num__sum']
     
     def get_n_cells(self, obj):
         return crustdb_main.objects.filter(doi = obj.doi).aggregate(Sum('cell_num'))['cell_num__sum']
