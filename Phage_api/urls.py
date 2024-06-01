@@ -172,6 +172,7 @@ urlpatterns = [
      path('slice/adata/', slice.views.adataView.as_view()),
 
      path('details', details.views.detailsView.as_view()),
+     path('details/topology', details.views.detailsTopoView.as_view()),
 
      path('phage/cluster', phage.views.phage_clusterView.as_view()),
      path('phage/subcluster', phage.views.phage_subclusterView.as_view()),
