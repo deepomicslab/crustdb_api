@@ -50,7 +50,11 @@ INSTALLED_APPS = [
     'publication',
     'slice',
     'celltype',
-    
+    'topology',
+    'general_node',
+    'graph',
+    'graph_node',
+
     'phage', #
     'phage_protein', #
     'phage_clusters', #
