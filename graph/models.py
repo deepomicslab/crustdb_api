@@ -30,4 +30,4 @@ class graph(models.Model):
 
     def __str__(self):
 
-        return self.id
+        return 'topo_'+str(self.topology_id)+'_'+self.type

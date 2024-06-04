@@ -67,12 +67,13 @@ def add_data():
         topology_qs = topology.objects.filter(repeat_data_uid = uid)
         if len(topology_qs) > 0:
             obj = topology_qs.first()
+            topology_id = obj.id
         else:
             obj = topology.objects.create(
                 repeat_data_uid = uid,
             )
-        topology_id = obj.id
-        _corr(species, uid, topology_id)
+            topology_id = obj.id
+            _corr(species, uid, topology_id)
         graph_id = _graph(species, uid, topology_id, graph_type, pkl_list)
         _node(species, uid, graph_id, graph_type)
 

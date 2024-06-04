@@ -42,6 +42,7 @@ import details.views
 import publication.views
 import slice.views
 import celltype.views
+import topology.views
 import phage_protein.views
 import phage_trna.views
 import phage_clusters.views
@@ -172,7 +173,7 @@ urlpatterns = [
      path('slice/adata/', slice.views.adataView.as_view()),
 
      path('details', details.views.detailsView.as_view()),
-     path('details/topology', details.views.detailsTopoView.as_view()),
+     path('details/topology', topology.views.topologyView.as_view()),
 
      path('phage/cluster', phage.views.phage_clusterView.as_view()),
      path('phage/subcluster', phage.views.phage_subclusterView.as_view()),

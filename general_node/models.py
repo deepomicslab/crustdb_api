@@ -15,4 +15,5 @@ class general_node(models.Model):
 
     def __str__(self):
 
-        return self.repeat_data_uid+'_'+self.node_name
+        # return self.repeat_data_uid+'_'+self.node_name
+        return self.node_name
