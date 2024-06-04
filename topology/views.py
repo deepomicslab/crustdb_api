@@ -11,6 +11,7 @@ from details.models import details
 from topology.models import topology
 from general_node.models import general_node
 from graph.models import graph
+from graph_node.models import graph_node
 
 # from phage.serializers import phageSerializer
 from crustdb_main.serializers import crustdbSerializer
@@ -52,24 +53,28 @@ class topologyView(APIView):
             repeat_data_uid = querydict['details_uid']
             uid = repeat_data_uid
         topology_id = topology.objects.get(repeat_data_uid = uid).id
+        graph_obj = graph.objects.filter(topology_id = topology_id)[0]
+        graph_id = graph_obj.id
 
         # general_node
-        general_node_qs = general_node.objects.filter(topology_id = topology_id).order_by('id')
-        general_node_qs = np.array([[i.node_name, i.x, i.y, i.z] for i in general_node_qs])
-        # nodesCoord = pd.DataFrame(general_node_qs[:, 1:], columns=['x', 'y', 'z'])
-        nodesCoord = pd.DataFrame(general_node_qs, columns=['node_name', 'x', 'y', 'z'])
-        # print('===================== nodesCoord',nodesCoord)
+        nodeInfoList = []
+        general_node_qs = general_node.objects.filter(topology_id = topology_id).order_by('node_name')
+        graph_node_qs = graph_node.objects.filter(graph_id = graph_id).order_by('node_name')
+        page_rank_score_list = [[i.page_rank_score] for i in graph_node_qs]
+        nodeInfoList = [[i.node_name, i.x, i.y, i.z] for i in general_node_qs]
+        nodeInfoList = np.append(nodeInfoList, page_rank_score_list, axis=1)
 
         # edge
-        graph_qs = graph.objects.filter(topology_id = topology_id)
-        edgeList = graph_qs[0].edges
+        edgeList = graph_obj.edges
         # edgeList = [[np.where(nodeIndex == i[0])[0][0], np.where(nodeIndex == i[1])[0][0]] for i in edgeList][0]
         node_index_map = {}
-        for idx, x in enumerate(general_node_qs[:, 0]):
+        for idx, x in enumerate(nodeInfoList[:, 0]):
             if x in list(node_index_map.keys()):
                 print('topology view ------- repeat')
                 continue
             node_index_map[x] = idx
+
+        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'page_rank_score'])
         edgeList = [[node_index_map[i[0]], node_index_map[i[1]]] for i in edgeList]
 
-        return Response([nodesCoord, edgeList])
+        return Response([nodeInfoList, edgeList])
