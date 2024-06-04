@@ -57,7 +57,8 @@ class topologyView(APIView):
         general_node_qs = general_node.objects.filter(topology_id = topology_id).order_by('id')
         general_node_qs = np.array([[i.node_name, i.x, i.y, i.z] for i in general_node_qs])
         # nodesCoord = pd.DataFrame(general_node_qs[:, 1:], columns=['x', 'y', 'z'])
-        nodesCoord = pd.DataFrame(general_node_qs, columns=['node_nmae', 'x', 'y', 'z'])
+        nodesCoord = pd.DataFrame(general_node_qs, columns=['node_name', 'x', 'y', 'z'])
+        # print('===================== nodesCoord',nodesCoord)
 
         # edge
         graph_qs = graph.objects.filter(topology_id = topology_id)
