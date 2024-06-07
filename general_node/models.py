@@ -1,7 +1,6 @@
 from django.db import models
 
 class general_node(models.Model):
-    # repeat_data_uid = models.CharField(max_length=200)
     topology_id = models.IntegerField()
     node_name = models.CharField(max_length=200)
     x = models.FloatField()
@@ -14,6 +13,4 @@ class general_node(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-
-        # return self.repeat_data_uid+'_'+self.node_name
         return self.node_name

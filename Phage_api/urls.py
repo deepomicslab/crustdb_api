@@ -174,6 +174,7 @@ urlpatterns = [
 
      path('details', details.views.detailsView.as_view()),
      path('details/topology', topology.views.topologyView.as_view()),
+     path('details/topology_graphlist', topology.views.topology_graphlistView.as_view()),
 
      path('phage/cluster', phage.views.phage_clusterView.as_view()),
      path('phage/subcluster', phage.views.phage_subclusterView.as_view()),

@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'topology',
     'general_node',
     'graph',
-    'graph_node',
+    # 'graph_node',
 
     'phage', #
     'phage_protein', #
