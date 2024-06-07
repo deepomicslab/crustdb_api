@@ -59,20 +59,29 @@ class topologyView(APIView):
         querydict = request.query_params.dict()
         print('============================= querydict\n', querydict)
 
-        if 'graph_selection_str' in querydict: # topologyid_55-KNN_SNN-10.pkl
-            graph_selection_str = querydict['graph_selection_str']
-            type = graph_selection_str.split('-')[1]
-            pkl = graph_selection_str.split('-')[2]
+        assert 'graph_selection_str' in querydict # topologyid_55-KNN_SNN-10.pkl
+        
+        graph_selection_str = querydict['graph_selection_str']
+        type = graph_selection_str.split('-')[1]
+        pkl = graph_selection_str.split('-')[2]
 
-            topology_id = int(graph_selection_str.split('-')[0].split('_')[1])
-            topology_obj = topology.objects.get(id = topology_id)
-            uid = topology_obj.repeat_data_uid
-            print('uid', uid)
-            crustdb_main_obj = crustdb_main.objects.get(uniq_data_uid = uid[:-5])
-            species = get_species(crustdb_main_obj.species, crustdb_main_obj.slice_id)
-            graph_obj = graph.objects.filter(topology_id = topology_id, type = type, pkl = pkl).first()
-        # else:
-        #     graph_obj = graph_objs.first()
+        topology_id = int(graph_selection_str.split('-')[0].split('_')[1])
+        topology_obj = topology.objects.get(id = topology_id)
+        uid = topology_obj.repeat_data_uid
+        print('uid', uid)
+        crustdb_main_obj = crustdb_main.objects.get(uniq_data_uid = uid[:-5])
+        species = get_species(crustdb_main_obj.species, crustdb_main_obj.slice_id)
+        graph_obj = graph.objects.filter(topology_id = topology_id, type = type, pkl = pkl).first()
+
+        graphAttr = {
+            'average_branching_factor': graph_obj.average_branching_factor,
+            'modularity': graph_obj.modularity,
+            'span': graph_obj.span,
+            'assortativity': graph_obj.assortativity,
+            'degree_centrality': graph_obj.degree_centrality,
+            'closeness_centrality': graph_obj.closeness_centrality,
+            'betweenness_centrality': graph_obj.betweenness_centrality,
+        }
 
         # graph node
         general_node_qs = general_node.objects.filter(topology_id = topology_id).order_by('node_name')
@@ -96,7 +105,7 @@ class topologyView(APIView):
         nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'page_rank_score'])
         edgeList = [[node_index_map[i[0]], node_index_map[i[1]]] for i in edgeList]
 
-        return Response([nodeInfoList, edgeList])
+        return Response([nodeInfoList, edgeList, graphAttr])
 
 class topology_graphlistView(APIView):
     def get(self, request, *args, **kwargs):
