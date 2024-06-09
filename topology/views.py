@@ -89,8 +89,13 @@ class topologyView(APIView):
         home = local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
         df = pd.read_csv(home + '/node.csv', index_col=0).sort_index()
         assert np.sum(np.array(df.index) != np.array(nodeInfoList)[:, 0]) == 0
-        page_rank_score_list = df['Page Rank score'].to_numpy().reshape(-1, 1)
-        nodeInfoList = np.append(nodeInfoList, page_rank_score_list, axis=1)
+        # page_rank_score_list = df['Page Rank score'].to_numpy().reshape(-1, 1)
+        # page_rank_score_list = df.to_numpy()
+        # print('---------------------')
+        # print('nodeInfoList', np.array(nodeInfoList).shape)
+        # print('nodeInfoList', df.to_numpy().shape)
+        # nodeInfoList = np.append(nodeInfoList, page_rank_score_list, axis=1)
+        nodeInfoList = np.concatenate((nodeInfoList, df.to_numpy()),axis=1)
         
         # edge
         edgeList = pd.read_csv(home + '/edge.csv', index_col=0).to_numpy()
@@ -102,7 +107,7 @@ class topologyView(APIView):
                 continue
             node_index_map[x] = idx
 
-        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'page_rank_score'])
+        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score'])
         edgeList = [[node_index_map[i[0]], node_index_map[i[1]]] for i in edgeList]
 
         return Response([nodeInfoList, edgeList, graphAttr])
