@@ -37,7 +37,7 @@ import os
 # from datasets.models import datasets
 from datetime import datetime
 import numpy as np
-import pandas as pd
+import pickle
 
 def get_species(species, slice_id):
     if species == 'Ambystoma mexicanum (Axolotl)':
@@ -57,7 +57,7 @@ def get_species(species, slice_id):
 class topologyView(APIView):    
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
-        print('============================= querydict\n', querydict)
+        # print('============================= querydict\n', querydict)
 
         assert 'graph_selection_str' in querydict # topologyid_55-KNN_SNN-10.pkl
         
@@ -110,7 +110,12 @@ class topologyView(APIView):
         nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score'])
         edgeList = [[node_index_map[i[0]], node_index_map[i[1]]] for i in edgeList]
 
-        return Response([nodeInfoList, edgeList, graphAttr])
+        # MST parent-child relation
+        with open('/home/platform/project/crustdb_platform/crustdb_api/08_networkx_graph_mst_parentchild_relation.pkl', 'rb') as handle:
+            mst_parentchild_relation = pickle.load(handle)
+        # mst_parentchild_relation['children'] = [mst_parentchild_relation['children'][0]]
+
+        return Response([nodeInfoList, edgeList, graphAttr, mst_parentchild_relation])
 
 class topology_graphlistView(APIView):
     def get(self, request, *args, **kwargs):
