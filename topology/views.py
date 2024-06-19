@@ -57,21 +57,20 @@ def get_species(species, slice_id):
 class topologyView(APIView):    
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
-        # print('============================= querydict\n', querydict)
-
         assert 'graph_selection_str' in querydict # topologyid_55-KNN_SNN-10.pkl
         
         graph_selection_str = querydict['graph_selection_str']
+        # print('topo -----------', graph_selection_str, graph_selection_str.split('-'))
         type = graph_selection_str.split('-')[1]
         pkl = graph_selection_str.split('-')[2]
 
         topology_id = int(graph_selection_str.split('-')[0].split('_')[1])
         topology_obj = topology.objects.get(id = topology_id)
         uid = topology_obj.repeat_data_uid
-        print('uid', uid)
         crustdb_main_obj = crustdb_main.objects.get(uniq_data_uid = uid[:-5])
         species = get_species(crustdb_main_obj.species, crustdb_main_obj.slice_id)
         graph_obj = graph.objects.filter(topology_id = topology_id, type = type, pkl = pkl).first()
+        # print('-------', topology_id, type, pkl)
 
         graphAttr = {
             'average_branching_factor': graph_obj.average_branching_factor,
@@ -89,21 +88,14 @@ class topologyView(APIView):
         home = local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
         df = pd.read_csv(home + '/node.csv', index_col=0).sort_index()
         assert np.sum(np.array(df.index) != np.array(nodeInfoList)[:, 0]) == 0
-        # page_rank_score_list = df['Page Rank score'].to_numpy().reshape(-1, 1)
-        # page_rank_score_list = df.to_numpy()
-        # print('---------------------')
-        # print('nodeInfoList', np.array(nodeInfoList).shape)
-        # print('nodeInfoList', df.to_numpy().shape)
-        # nodeInfoList = np.append(nodeInfoList, page_rank_score_list, axis=1)
         nodeInfoList = np.concatenate((nodeInfoList, df.to_numpy()),axis=1)
         
         # edge
         edgeList = pd.read_csv(home + '/edge.csv', index_col=0).to_numpy()
-        # edgeList = [[np.where(nodeIndex == i[0])[0][0], np.where(nodeIndex == i[1])[0][0]] for i in edgeList][0]
         node_index_map = {}
         for idx, x in enumerate(nodeInfoList[:, 0]):
             if x in list(node_index_map.keys()):
-                print('topology view ------- repeat')
+                # print('topology view ------- repeat')
                 continue
             node_index_map[x] = idx
 
@@ -113,9 +105,62 @@ class topologyView(APIView):
         # MST parent-child relation
         with open('/home/platform/project/crustdb_platform/crustdb_api/08_networkx_graph_mst_parentchild_relation.pkl', 'rb') as handle:
             mst_parentchild_relation = pickle.load(handle)
-        # mst_parentchild_relation['children'] = [mst_parentchild_relation['children'][0]]
+        
+        # print('------', nodeInfoList.to_numpy().shape)
 
         return Response([nodeInfoList, edgeList, graphAttr, mst_parentchild_relation])
+
+class topology_nodeattrView(APIView):    
+    def get(self, request, *args, **kwargs):
+        querydict = request.query_params.dict()
+
+        # print('----------querydict', querydict)
+        assert 'graph_selection_str' in querydict # topologyid_55-KNN_SNN-10.pkl
+        
+        graph_selection_str = querydict['graph_selection_str']
+        # print('nodeattr -----------', graph_selection_str, graph_selection_str.split('-'))
+
+        type = graph_selection_str.split('-')[1]
+        pkl = graph_selection_str.split('-')[2]
+
+        topology_id = int(graph_selection_str.split('-')[0].split('_')[1])
+        topology_obj = topology.objects.get(id = topology_id)
+        uid = topology_obj.repeat_data_uid
+        crustdb_main_obj = crustdb_main.objects.get(uniq_data_uid = uid[:-5])
+        species = get_species(crustdb_main_obj.species, crustdb_main_obj.slice_id)
+        graph_obj = graph.objects.filter(topology_id = topology_id, type = type, pkl = pkl).first()
+
+        # graph node
+        general_node_qs = general_node.objects.filter(topology_id = topology_id).order_by('node_name')
+        nodeInfoList = [[i.node_name, i.x, i.y, i.z] for i in general_node_qs]
+        home = local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
+        df = pd.read_csv(home + '/node.csv', index_col=0).sort_index()
+        assert np.sum(np.array(df.index) != np.array(nodeInfoList)[:, 0]) == 0
+        nodeInfoList = np.concatenate((nodeInfoList, df.to_numpy()),axis=1)
+        
+        # edge
+        node_index_map = {}
+        for idx, x in enumerate(nodeInfoList[:, 0]):
+            if x in list(node_index_map.keys()):
+                # print('topology view ------- repeat')
+                continue
+            node_index_map[x] = idx
+
+        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score'])
+        nodeInfoList = nodeInfoList.sort_values(by=['page_rank_score'], ascending=False)
+        
+        if 'sorter' in querydict and querydict['sorter'] != '':
+            sorter = json.loads(querydict['sorter'])
+            order = sorter['order']
+            columnKey = sorter['columnKey']
+            if order == 'false':
+                pass
+            elif order == 'ascend':
+                nodeInfoList = nodeInfoList.sort_values(by=[columnKey], ascending=True)
+            else:  # 'descend
+                nodeInfoList = nodeInfoList.sort_values(by=[columnKey], ascending=False)
+
+        return Response([nodeInfoList])
 
 class topology_graphlistView(APIView):
     def get(self, request, *args, **kwargs):
