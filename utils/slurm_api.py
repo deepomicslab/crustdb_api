@@ -8,28 +8,49 @@ import sys
 #               'CANCELLED', 'FAILED', 'TIMEOUT', 'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL']
 
 
-def get_job_output(job_id):
-    path = local_settings.TASKLOG + \
-        'output/output_'+str(job_id)+'.output'
+# def get_job_output(job_id):
+#     path = local_settings.TASKLOG + 'output/output_'+str(job_id)+'.output'
+#     try:
+#         with open(path, 'r') as f:
+#             output = f.read()
+#             return output
+#     except:
+#         return ''
+
+
+# def get_job_error(job_id):
+#     path = local_settings.TASKLOG+'error/error_'+str(job_id)+'.error'
+#     try:
+#         with open(path, 'r') as f:
+#             output = f.read()
+#             return output
+#     except:
+#         return ''
+    
+def get_job_output(output_log_path):
+    path = output_log_path + 'sbatch.out'
     try:
         with open(path, 'r') as f:
             output = f.read()
+            if output == '': output = 'no sbatch log'
             return output
     except:
-        return ''
+        return 'no sbatch log'
 
 
-def get_job_error(job_id):
-    path = local_settings.TASKLOG+'error/error_'+str(job_id)+'.error'
+def get_job_error(output_log_path):
+    path = output_log_path + 'sbatch.err'
     try:
         with open(path, 'r') as f:
             output = f.read()
+            if output == '': output = 'no sbatch error'
             return output
     except:
-        return ''
+        return 'no sbatch error'
 
 
 def get_job_status(job_id):
+    print('=============== get_job_status ===============')
     squeue_command = ["squeue", "--job", str(job_id), "--format=%T"]
     try:
         squeue_output = subprocess.check_output(squeue_command).decode("utf-8")
@@ -40,8 +61,7 @@ def get_job_status(job_id):
         print("squeue check error:", e, file=sys.stderr)
         pass
 
-    sacct_command = ["sacct", "--jobs",
-                     str(job_id), "--format=JobID,State"]
+    sacct_command = ["sacct", "--jobs", str(job_id), "--format=JobID,State"]
     try:
         print(sacct_command)
         sacct_output = subprocess.check_output(sacct_command).decode("utf-8")

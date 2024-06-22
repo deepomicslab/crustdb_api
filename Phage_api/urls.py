@@ -50,6 +50,7 @@ import phage_subcluster.views
 import phage_hosts.views
 import analysis.views
 import task.views
+import craft_task.views
 router = routers.DefaultRouter()
 router.register('phage_protein', phage_proteinViewSet)
 
@@ -223,13 +224,18 @@ urlpatterns = [
      path('hosts/filter/', phage_hosts.views.phage_hostsfilterView.as_view()),
 
      path('analyze/pipline/', task.views.piplineView.as_view()),
+     path('analyze/craft_single_celltype/', craft_task.views.craft_single_celltype_View.as_view()),
      path('analyze/clusterpipline/', task.views.clusterpiplineView.as_view()),
      path('analyze/inputcheck/', analysis.views.inputcheck.as_view()),
 
 
-     path('tasks/detail/', task.views.viewtaskdetail),
-     path('tasks/detail/log/', task.views.viewtasklog),
-     path('tasks/list/', task.views.viewtask),
+     # path('tasks/detail/', task.views.viewtaskdetail),
+     path('tasks/detail/', craft_task.views.viewtaskdetail),
+     path('tasks/detail/log/', craft_task.views.viewtasklog),
+     path('tasks/detail/result/', craft_task.views.viewtaskresult),
+     # path('tasks/list/', task.views.viewtask),
+     path('tasks/list/', craft_task.views.viewtask),
+     path('tasks/zip/', craft_task.views.getZipData),
      path('tasks/result/phage/', task.views.viewphage),
      path('tasks/result/phage/terminators/', task.views.viewphageterminators),
      path('tasks/result/phage/trnas/', task.views.viewphagetrnas),

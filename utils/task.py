@@ -1,7 +1,9 @@
 from Phage_api import settings_local as local_settings
 from utils import slurm_api
 import json
-from Phage_api import settings_local as local_settings
+import subprocess
+import re
+import glob
 # annotation: false,
 # quality: false,
 # host: false,
@@ -18,6 +20,79 @@ from Phage_api import settings_local as local_settings
 ##### run analysis script#####
 
 
+def run_single_celltype_mode(info_dict):
+    user_input_path = info_dict['user_input_path']
+    output_result_path = info_dict['output_result_path']
+    output_log_path = info_dict['output_log_path']
+    species = info_dict['species']
+    analysis_type = info_dict['analysis_type']
+    sbatch_command = (
+        'sbatch' + \
+        ' --output=' + output_log_path + 'sbatch.out' + \
+        ' --error=' + output_log_path + 'sbatch.err' + \
+        ' ' +local_settings.SCRIPTS + 'CRUST_Mice_endo.sh' + \
+        ' -c ' + user_input_path['csv'] + \
+        ' -r ' + output_result_path + \
+        ' -s ' + species + \
+        ' -l ' + output_log_path + 'craft.log'
+    ) 
+    sbatch_output = subprocess.check_output(sbatch_command, shell = True).decode("utf-8") # Submitted batch job 1410435
+    job_id = re.search(r"Submitted batch job (\d+)", sbatch_output).group(1) # 1410435
+    status = slurm_api.get_job_status(job_id) # PENDING
+    taskdetail_dict = {
+        'job_id': job_id,
+        'status': status,
+    }
+    return taskdetail_dict
+
+def run_analysis(info_dict):
+    if info_dict['analysis_type'] == 'Single Celltype Mode':
+        taskdetail_dict = run_single_celltype_mode(info_dict)
+    else: 
+        pass
+    return taskdetail_dict
+
+def get_job_output(output_log_path):
+    path = output_log_path + 'craft.log'
+    try:
+        with open(path, 'r') as f:
+            output = f.read()
+            if output == '': output = 'no craft log'
+            return output
+    except:
+        return 'no craft log'
+
+def re_match(start, end, str):
+    _, res = re.findall(r"("+start+r")\s*(.*?)\s*(?!\1)(?:"+end+r")", str)[0]
+    return res
+
+def get_job_result(output_result_path):
+    res = {}
+    for _ in glob.glob(output_result_path + '/*'):
+        name = _.strip().split('/')[-1]    
+        with open(output_result_path + name + '/' + name + '.log') as f:
+            L = f.readlines()
+        log_lines = ''
+        for i in L:
+            log_lines += i
+        distance_list = []
+        for i in range(0, len(L) - 1):
+            if L[i].find("RMSD") == -1:
+                continue
+            distance_list.append(L[i].strip().split(' ')[-1])  
+        tmp_dict = {
+            # 'species': re_match('Species: ', '\n', log_lines),
+            'sample_name': re_match('Sample Name: ', '\n', log_lines),
+            'seed': int(re_match('Seed: ', '\n', log_lines)),
+            'gene_filter_threshold': float(re_match('Threshold for gene filter is: ', '\n', log_lines)),
+            'anchor_gene_proportion': float(re_match('Number of genes used for Rotation Derivation is: ', '\n', log_lines)),
+            'task_id': re_match('Task ID: ', '\n', log_lines), # craft task id, i.e., the random 4-char string
+            'inferred_trans_center_num': int(re_match('Number of total Transcription centers is: ', '\n', log_lines)),
+            'distance_list': distance_list,
+        }
+        res[name] = tmp_dict
+    return res
+    
 def init_taskdetail_dict(info_dict):
     new_dict = {}
     new_dict["taskid"] = info_dict["taskid"]
