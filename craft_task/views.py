@@ -42,13 +42,31 @@ def generate_id():
     id = "".join(random.choices(string.ascii_uppercase + string.digits, k=4))
     return id
 
-demopath = {
+demo_path = {
     'Single Celltype Mode': {
-        'csv': 'craft_single_celltype/Mice_endo/SS200000108BR_A3A4_scgem.Endothelial_cell.csv',
+        'Mice': {
+            'csv': 'demoUser_singleCelltypeMode_miceEndo/input/SS200000108BR_A3A4_scgem.Endothelial_cell.csv',
+        },
     },
     'Multi-Celltype Mode': {
-        'csv': 'craft_multi_celltype/merfish_ileum/baysor_transcripts.gem.csv',
-        'feature': 'craft_multi_celltype/merfish_ileum/baysor_cell_feature.csv',
+        'Merfish': {
+            'csv': 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_cell_feature.csv',
+            'feature': 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_cell_feature.csv',
+        }
+    },
+}
+
+user_path = {
+    'Single Celltype Mode': {
+        'Mice': {
+            'csv': 'SS200000108BR_A3A4_scgem.Endothelial_cell.csv',
+        },
+    },
+    'Multi-Celltype Mode': {
+        'Merfish': {
+            'csv': 'baysor_transcripts.gem.csv',
+            'feature': 'baysor_cell_feature.csv',
+        }
     },
 }
 
@@ -56,6 +74,7 @@ class craft_single_celltype_View(APIView):
     def post(self, request, *args, **kwargs):
         # rundemo = request.data['rundemo']
         analysistype = request.data['analysistype']
+        species = 'Mice'
         assert analysistype in ['Single Celltype Mode', 'Multi-Celltype Mode']
 
         usertask = str(int(time.time()))+'_' + generate_id()
@@ -68,40 +87,40 @@ class craft_single_celltype_View(APIView):
 
         # if rundemo == 'true':
         if request.data['inputtype'] == 'rundemo':
+            species = request.data['species']
             is_demo_input = True
             if analysistype == 'Single Celltype Mode':
                 shutil.copy(
-                    local_settings.DEMO_INPUT + demopath[analysistype]['csv'], 
-                    local_settings.USER_PATH + usertask + '/input/' + demopath[analysistype]['csv'].split('/')[-1])
-                
+                    local_settings.DEMO_ANALYSIS + demo_path[analysistype][species]['csv'], 
+                    local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'])
                 # create new obj
                 newtask = craft_task.objects.create(
                     user_id = request.data['userid'], 
                     user_input_path = {
-                        'csv': local_settings.USER_PATH + usertask + '/input/' + demopath[analysistype]['csv'].split('/')[-1],
+                        'csv': local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'],
                     }, 
                     is_demo_input = is_demo_input,
                     output_result_path = local_settings.USER_PATH + usertask + '/output/result/',
                     output_log_path = local_settings.USER_PATH + usertask + '/output/log/',
                     analysis_type = analysistype,
-                    species = request.data['species'],
+                    species = species,
                     status = 'Created',
                 )
             elif analysistype == 'Multi-Celltype Mode':
                 shutil.copy(
-                    local_settings.DEMO_INPUT + demopath[analysistype]['csv'], 
-                    local_settings.USER_PATH + usertask + '/input/' + demopath[analysistype]['csv'].split('/')[-1])
+                    local_settings.DEMO_ANALYSIS + demo_path[analysistype][species]['csv'], 
+                    local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'])
                 shutil.copy(
-                    local_settings.DEMO_INPUT + demopath[analysistype]['feature'], 
-                    local_settings.USER_PATH + usertask + '/input/' + demopath[analysistype]['feature'].split('/')[-1])
+                    local_settings.DEMO_ANALYSIS + demo_path[analysistype][species]['feature'], 
+                    local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['feature'])
                 
                 # create new obj
                 newtask = craft_task.objects.create(
                     job_id = '-1',
                     user_id = request.data['userid'], 
                     user_input_path = {
-                        'csv': local_settings.USER_PATH + usertask + '/input/' + demopath[analysistype]['csv'].split('/')[-1],
-                        'feature': local_settings.USER_PATH + usertask + '/input/' + demopath[analysistype]['feature'].split('/')[-1],
+                        'csv': local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'],
+                        'feature': local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['feature'],
                     }, 
                     is_demo_input = is_demo_input,
                     output_result_path = local_settings.USER_PATH + usertask + '/output/result/',

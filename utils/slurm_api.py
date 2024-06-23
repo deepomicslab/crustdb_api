@@ -50,7 +50,6 @@ def get_job_error(output_log_path):
 
 
 def get_job_status(job_id):
-    print('=============== get_job_status ===============')
     squeue_command = ["squeue", "--job", str(job_id), "--format=%T"]
     try:
         squeue_output = subprocess.check_output(squeue_command).decode("utf-8")
