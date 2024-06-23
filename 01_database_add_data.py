@@ -1,4 +1,4 @@
-from scripts import import_crustdb_main, import_slice, import_publication, import_details, import_celltype, import_topology
+from scripts import import_crustdb_main, import_slice, import_publication, import_details, import_celltype, import_topology, import_craft_task
 from datetime import timedelta
 import datetime
 
@@ -34,5 +34,8 @@ def log(log_str):
 # log(" [completed] scripts.import_celltype\n")
 
 # Remenber to maintain 07_check_topology_notexist.ipynb before adding topology/graph/general_node/graph_node
-import_topology.add_data()
-log(" [completed] scripts.import_topology, graph, general_node, graph_node\n")
+# import_topology.add_data()
+# log(" [completed] scripts.import_topology, graph, general_node, graph_node\n")
+
+import_craft_task.add_data()
+log(" [completed] scripts.import_craft_task \n")
