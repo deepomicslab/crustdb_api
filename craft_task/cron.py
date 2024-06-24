@@ -37,6 +37,7 @@ import datetime
 #             sequencepre.upadtephagecsv_cluster(userpath)
 
 
+# To manually run: python manage.py crontab run <tash_hash_id>
 def task_status_updata():
     current_time = datetime.datetime.now()
     f = open('/home/platform/project/crustdb_platform/crustdb_api/workspace/analysis_script/tmp/my_cronjob.log', 'a')
