@@ -1,5 +1,4 @@
-from utils import task as tasktools
-from utils import slurm_api
+from utils import task, slurm_api
 # from task.models import tasks
 from craft_task.models import craft_task
 import json
@@ -43,17 +42,18 @@ def task_status_updata():
     f = open('/home/platform/project/crustdb_platform/crustdb_api/workspace/analysis_script/tmp/my_cronjob.log', 'a')
     f.write('exec update start  '+str(current_time)+"\n")
     tasklist = craft_task.objects.filter(status='Running')
-    f.write('tasklist =========== '+str(tasklist))
-    print(1111111)
 
-    for task in tasklist:
-        job_id = task.job_id
+    for task_obj in tasklist:
+        job_id = task_obj.job_id
         status = slurm_api.get_job_status(job_id)
         if status == 'FAILED':
-            task.status = 'failed'
+            task_obj.status = 'Failed'
         elif status == 'COMPLETED':
-            task.status = 'Success'
-        task.save()
+            if task.check_task_result(task_obj.output_result_path):
+                task_obj.status = 'Success'
+            else:
+                task_obj.status = 'Failed'
+        task_obj.save()
         # isComplete = False if status != 'COMPLETED' else True
         # if isComplete:
 
@@ -85,4 +85,4 @@ def task_status_updata():
     # with open('/home/platform/project/crustdb_platform/crustdb_api/workspace/analysis_script/tmp/my_cronjob.log', 'a') as f:
     f.write('exec update end  '+str(current_time)+"\n")
     f.close()
-    # tasktools.task_status_updata(task, taskdetail_dict)
+    # task.task_status_updata(task, taskdetail_dict)

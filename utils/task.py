@@ -95,6 +95,16 @@ def get_job_result(output_result_path):
         }
         res[name] = tmp_dict
     return res
+
+def check_task_result(output_result_path):
+    for _ in glob.glob(output_result_path + '/*'):
+        name = _.strip().split('/')[-1]    
+        with open(output_result_path + name + '/' + name + '.log') as f:
+            L = f.readlines()
+        for l in L:
+            if 'failed' in l:
+                return False
+    return True
     
 def init_taskdetail_dict(info_dict):
     new_dict = {}

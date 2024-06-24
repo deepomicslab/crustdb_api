@@ -5,6 +5,7 @@ from rest_framework import viewsets
 # from task.serializers import taskSerializer,taskSerializer2
 from craft_task.models import craft_task
 from craft_task.serializers import Serializer as taskSerializer
+import craft_task.cron as taskCron
 from rest_framework.response import Response
 from django.http import FileResponse, JsonResponse
 import csv
@@ -241,7 +242,7 @@ class craft_multi_celltype_View(APIView):
 @api_view(['GET'])
 def viewtask(request):
     userid = request.query_params.dict()['userid']
-    taskslist = craft_task.objects.filter(user_id=userid)
+    taskslist = craft_task.objects.filter(user_id=userid) #.order_by('-created_at')
     serializer = taskSerializer(taskslist, many=True)
     return Response({'results': serializer.data})
 
@@ -312,4 +313,9 @@ def canceltask(request):
     if not cancel_success: print('[Error] Cancel task failed')
     craft_task_obj.status = 'Suspended'
     craft_task_obj.save()
+    return Response(None)
+
+@api_view(['POST'])
+def refreshtaskresult(request):
+    taskCron.task_status_updata()
     return Response(None)
