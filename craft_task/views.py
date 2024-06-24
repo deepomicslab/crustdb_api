@@ -72,6 +72,9 @@ user_path = {
 
 class craft_single_celltype_View(APIView):
     def post(self, request, *args, **kwargs):
+        print('----------request.data',request)
+        print(request.data)
+        print(request.data.keys())
         # rundemo = request.data['rundemo']
         analysistype = request.data['analysistype']
         assert analysistype == 'Single Celltype Mode'
@@ -98,6 +101,11 @@ class craft_single_celltype_View(APIView):
             csvfile = request.FILES['CSV']
             _path = default_storage.save(local_settings.USER_PATH + usertask + '/input/' + csvfile.name, ContentFile(csvfile.read()))
             user_input_path_csv = local_settings.USER_PATH + usertask + '/input/' + csvfile.name
+        elif inputtype == 'paste':
+            assert 'CSVfile' in request.data.keys()
+            user_input_path_csv = local_settings.USER_PATH + usertask + '/input/csvfile.csv'
+            with open(user_input_path_csv, 'w') as file:
+                file.write(request.data['CSVfile'])
 
         # create new obj
         newtask = craft_task.objects.create(
