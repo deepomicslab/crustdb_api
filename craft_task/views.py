@@ -268,11 +268,20 @@ def viewtasklog(request):
     })
 
 @api_view(['GET'])
+def viewtaskresultlog(request):
+    taskid = request.query_params.dict()['taskid']
+    task_obj = craft_task.objects.get(id=taskid)
+
+    craft_result_log = task.get_job_result('Failed', task_obj.output_result_path)
+    craft_result_keys = craft_result_log.keys()
+    return Response([craft_result_keys, craft_result_log])
+
+@api_view(['GET'])
 def viewtaskresult(request):
     taskid = request.query_params.dict()['taskid']
     task_obj = craft_task.objects.get(id=taskid)
 
-    craft_result = task.get_job_result(task_obj.output_result_path)
+    craft_result = task.get_job_result('Success', task_obj.output_result_path)
     craft_result_keys = craft_result.keys()
     return Response([craft_result_keys, craft_result])
 

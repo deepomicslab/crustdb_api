@@ -234,6 +234,7 @@ urlpatterns = [
      path('tasks/refresh/', craft_task.views.refreshtaskresult),
      path('tasks/detail/', craft_task.views.viewtaskdetail),
      path('tasks/detail/log/', craft_task.views.viewtasklog),
+     path('tasks/detail/result_log/', craft_task.views.viewtaskresultlog),
      path('tasks/detail/result/', craft_task.views.viewtaskresult),
      # path('tasks/list/', task.views.viewtask),
      path('tasks/list/', craft_task.views.viewtask),

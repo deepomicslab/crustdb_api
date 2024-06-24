@@ -69,7 +69,7 @@ def re_match(start, end, str):
     _, res = re.findall(r"("+start+r")\s*(.*?)\s*(?!\1)(?:"+end+r")", str)[0]
     return res
 
-def get_job_result(output_result_path):
+def get_job_result(task_status, output_result_path):
     res = {}
     for _ in glob.glob(output_result_path + '/*'):
         name = _.strip().split('/')[-1]    
@@ -78,23 +78,31 @@ def get_job_result(output_result_path):
         log_lines = ''
         for i in L:
             log_lines += i
-        distance_list = []
-        for i in range(0, len(L) - 1):
-            if L[i].find("RMSD") == -1:
-                continue
-            distance_list.append(L[i].strip().split(' ')[-1])  
-        tmp_dict = {
-            # 'species': re_match('Species: ', '\n', log_lines),
-            'sample_name': re_match('Sample Name: ', '\n', log_lines),
-            'seed': int(re_match('Seed: ', '\n', log_lines)),
-            'gene_filter_threshold': float(re_match('Threshold for gene filter is: ', '\n', log_lines)),
-            'anchor_gene_proportion': float(re_match('Number of genes used for Rotation Derivation is: ', '\n', log_lines)),
-            'task_id': re_match('Task ID: ', '\n', log_lines), # craft task id, i.e., the random 4-char string
-            'inferred_trans_center_num': int(re_match('Number of total Transcription centers is: ', '\n', log_lines)),
-            'distance_list': distance_list,
-        }
+
+        assert task_status in ['Success', 'Failed']
+        if task_status == 'Success':
+            distance_list = []
+            for i in range(0, len(L) - 1):
+                if L[i].find("RMSD") == -1:
+                    continue
+                distance_list.append(L[i].strip().split(' ')[-1])  
+            tmp_dict = {
+                # 'species': re_match('Species: ', '\n', log_lines),
+                'sample_name': re_match('Sample Name: ', '\n', log_lines),
+                'seed': int(re_match('Seed: ', '\n', log_lines)),
+                'gene_filter_threshold': float(re_match('Threshold for gene filter is: ', '\n', log_lines)),
+                'anchor_gene_proportion': float(re_match('Number of genes used for Rotation Derivation is: ', '\n', log_lines)),
+                'task_id': re_match('Task ID: ', '\n', log_lines), # craft task id, i.e., the random 4-char string
+                'inferred_trans_center_num': int(re_match('Number of total Transcription centers is: ', '\n', log_lines)),
+                'distance_list': distance_list,
+            }
+        elif task_status == 'Failed':
+            tmp_dict = {
+                'log_lines': log_lines
+            }
         res[name] = tmp_dict
     return res
+
 
 def check_task_result(output_result_path):
     for _ in glob.glob(output_result_path + '/*'):
