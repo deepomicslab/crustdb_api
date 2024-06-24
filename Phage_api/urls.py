@@ -230,6 +230,7 @@ urlpatterns = [
 
 
      # path('tasks/detail/', task.views.viewtaskdetail),
+     path('tasks/cancel/', craft_task.views.canceltask),
      path('tasks/detail/', craft_task.views.viewtaskdetail),
      path('tasks/detail/log/', craft_task.views.viewtasklog),
      path('tasks/detail/result/', craft_task.views.viewtaskresult),

@@ -19,6 +19,9 @@ import glob
 
 ##### run analysis script#####
 
+def cancel_task(job_id):
+    cancel_success = slurm_api.cancel_job(job_id)
+    return cancel_success
 
 def run_single_celltype_mode(info_dict):
     user_input_path = info_dict['user_input_path']

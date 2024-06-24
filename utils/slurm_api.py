@@ -48,6 +48,14 @@ def get_job_error(output_log_path):
     except:
         return 'no sbatch error'
 
+def cancel_job(job_id):
+    squeue_command = ["scancel", str(job_id)]
+    try:
+        scancel_output = subprocess.check_output(squeue_command).decode("utf-8")
+        return True
+    except subprocess.CalledProcessError as e:
+        print("scancel error:", e, file=sys.stderr)
+        return False
 
 def get_job_status(job_id):
     squeue_command = ["squeue", "--job", str(job_id), "--format=%T"]

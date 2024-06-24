@@ -72,10 +72,6 @@ user_path = {
 
 class craft_single_celltype_View(APIView):
     def post(self, request, *args, **kwargs):
-        print('----------request.data',request)
-        print(request.data)
-        print(request.data.keys())
-        # rundemo = request.data['rundemo']
         analysistype = request.data['analysistype']
         assert analysistype == 'Single Celltype Mode'
         species = request.data['species']
@@ -307,3 +303,13 @@ def getZipData(request):
     filename += '_' + str(round(timestamp)) + '.zip'
     response['Content-Disposition'] = 'attachment; filename="'+filename
     return response
+
+@api_view(['POST'])
+def canceltask(request):
+    taskid = int(request.data['taskid'])
+    craft_task_obj = craft_task.objects.get(id = taskid)
+    cancel_success = task.cancel_task(craft_task_obj.job_id)
+    if not cancel_success: print('[Error] Cancel task failed')
+    craft_task_obj.status = 'Suspended'
+    craft_task_obj.save()
+    return Response(None)
