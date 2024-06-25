@@ -29,15 +29,17 @@ def run_single_celltype_mode(info_dict):
     output_log_path = info_dict['output_log_path']
     species = info_dict['species']
     analysis_type = info_dict['analysis_type']
+    fileseparator = info_dict['fileseparator']
     sbatch_command = (
         'sbatch' + \
         ' --output=' + output_log_path + 'sbatch.out' + \
         ' --error=' + output_log_path + 'sbatch.err' + \
         ' ' +local_settings.SCRIPTS + 'CRUST_Mice_endo.sh' + \
-        ' -c ' + user_input_path['csv'] + \
-        ' -r ' + output_result_path + \
-        ' -s ' + species + \
-        ' -l ' + output_log_path + 'craft.log'
+        ' -a ' + user_input_path['csv'] + \
+        ' -c ' + output_result_path + \
+        ' -d ' + species + \
+        ' -e ' + output_log_path + 'craft.log' + \
+        ' -f ' + fileseparator
     ) 
     sbatch_output = subprocess.check_output(sbatch_command, shell = True).decode("utf-8") # Submitted batch job 1410435
     job_id = re.search(r"Submitted batch job (\d+)", sbatch_output).group(1) # 1410435

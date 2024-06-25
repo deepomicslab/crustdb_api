@@ -76,10 +76,10 @@ class craft_single_celltype_View(APIView):
         analysistype = request.data['analysistype']
         assert analysistype == 'Single Celltype Mode'
         species = request.data['species']
+        fileseparator = request.data['fileseparator']
         inputtype = request.data['inputtype']
         user_id = request.data['userid']
         is_demo_input = False
-        user_input_path = ''
 
         usertask = str(int(time.time()))+'_' + generate_id()
         os.makedirs(local_settings.USER_PATH + usertask, exist_ok=False)
@@ -130,6 +130,7 @@ class craft_single_celltype_View(APIView):
             'output_log_path': newtask.output_log_path,
             'species': newtask.species,
             'analysis_type': newtask.analysis_type,
+            'fileseparator': fileseparator,
         }
         try:
             taskdetail_dict = task.run_single_celltype_mode(taskdetail_dict)
@@ -320,7 +321,7 @@ def canceltask(request):
     craft_task_obj = craft_task.objects.get(id = taskid)
     cancel_success = task.cancel_task(craft_task_obj.job_id)
     if not cancel_success: print('[Error] Cancel task failed')
-    craft_task_obj.status = 'Suspended'
+    craft_task_obj.status = 'Canceled'
     craft_task_obj.save()
     return Response(None)
 
