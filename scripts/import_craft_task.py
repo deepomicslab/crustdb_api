@@ -20,20 +20,20 @@ demo_user_map = {
         'species': 'Mice',
         'status': 'Success',
     },
-    # 'demoUser_multiCelltypeMode_merfishIleum': {
-    #     'job_id' = '1410439',
-    #     'task_id': -98,
-    #     'user_input_path': {
-    #         'csv': local_settings.DEMO_ANALYSIS + 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_cell_feature.csv',
-    #         'feature': local_settings.DEMO_ANALYSIS + 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_cell_feature.csv',
-    #     },
-    #     'output_result_path': 
-    #     'output_log_path':
-    #     'analysis_type': 'Single Celltype Mode',
-    #     'species': 'Merfish',
-    #     'status': 'Success',
-    #     'created_at': '2024-06-20 20:16:41.141907+00'
-    # }
+    'demoUser_multiCelltypeMode_merfishIleum': {
+        'job_id': '1411643',
+        'task_id': -98,
+        'user_input_path': {
+            'csv': local_settings.DEMO_ANALYSIS + 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_cell_feature.csv',
+            'feature': local_settings.DEMO_ANALYSIS + 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_cell_feature.csv',
+        },
+        'is_demo_input': True,
+        'output_result_path': local_settings.DEMO_ANALYSIS + 'demoUser_multiCelltypeMode_merfishIleum/output/result/',
+        'output_log_path': local_settings.DEMO_ANALYSIS + 'demoUser_multiCelltypeMode_merfishIleum/output/log/',
+        'analysis_type': 'Multi-Celltype Mode',
+        'species': 'Mice',
+        'status': 'Success',
+    }
 }
 
 def add_data():
@@ -54,7 +54,7 @@ def add_data():
             analysis_type = demo_user_map[userid]['analysis_type'],
             species = demo_user_map[userid]['species'],
             status = demo_user_map[userid]['status'],
-            created_at = demo_user_map[userid]['created_at'],
+            # created_at = demo_user_map[userid]['created_at'],
         )
 
 

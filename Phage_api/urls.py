@@ -225,6 +225,7 @@ urlpatterns = [
 
      path('analyze/pipline/', task.views.piplineView.as_view()),
      path('analyze/craft_single_celltype/', craft_task.views.craft_single_celltype_View.as_view()),
+     path('analyze/craft_multi_celltype/', craft_task.views.craft_multi_celltype_View.as_view()),
      path('analyze/clusterpipline/', task.views.clusterpiplineView.as_view()),
      path('analyze/inputcheck/', analysis.views.inputcheck.as_view()),
 

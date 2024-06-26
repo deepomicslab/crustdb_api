@@ -50,8 +50,8 @@ demo_path = {
         },
     },
     'Multi-Celltype Mode': {
-        'Merfish': {
-            'csv': 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_cell_feature.csv',
+        'Mice': {
+            'csv': 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_transcripts.gem.csv',
             'feature': 'demoUser_multiCelltypeMode_merfishIleum/input/baysor_cell_feature.csv',
         }
     },
@@ -98,11 +98,11 @@ class craft_single_celltype_View(APIView):
             csvfile = request.FILES['CSV']
             _path = default_storage.save(local_settings.USER_PATH + usertask + '/input/' + csvfile.name, ContentFile(csvfile.read()))
             user_input_path_csv = local_settings.USER_PATH + usertask + '/input/' + csvfile.name
-        elif inputtype == 'paste':
-            assert 'CSVfile' in request.data.keys()
-            user_input_path_csv = local_settings.USER_PATH + usertask + '/input/csvfile.csv'
-            with open(user_input_path_csv, 'w') as file:
-                file.write(request.data['CSVfile'])
+        # elif inputtype == 'paste':
+        #     assert 'CSVfile' in request.data.keys()
+        #     user_input_path_csv = local_settings.USER_PATH + usertask + '/input/csvfile.csv'
+        #     with open(user_input_path_csv, 'w') as file:
+        #         file.write(request.data['CSVfile'])
 
         # create new obj
         newtask = craft_task.objects.create(
@@ -149,96 +149,96 @@ class craft_single_celltype_View(APIView):
 
         return Response(res)
     
-class craft_multi_celltype_View(APIView):
-    pass
-    # def post(self, request, *args, **kwargs):
-    #     # rundemo = request.data['rundemo']
-    #     analysistype = request.data['analysistype']
-    #     species = 'Mice'
-    #     assert analysistype in ['Single Celltype Mode', 'Multi-Celltype Mode']
+class craft_multi_celltype_View(APIView):    
+    def post(self, request, *args, **kwargs):
+        # print('--------------request.data', request.data)
+        # print('==============request.FILES', request.FILES)
+        analysistype = request.data['analysistype']
+        assert analysistype == 'Multi-Celltype Mode'
+        species = request.data['species']
+        fileseparator = request.data['fileseparator']
+        inputtype = request.data['inputtype']
+        user_id = request.data['userid']
+        is_demo_input = False
 
-    #     usertask = str(int(time.time()))+'_' + generate_id()
-    #     os.makedirs(local_settings.USER_PATH + usertask, exist_ok=False)
-    #     os.makedirs(local_settings.USER_PATH + usertask + '/input', exist_ok=False)
-    #     os.makedirs(local_settings.USER_PATH + usertask + '/output/result', exist_ok=False)
-    #     os.makedirs(local_settings.USER_PATH + usertask + '/output/log', exist_ok=False)
+        usertask = str(int(time.time()))+'_' + generate_id()
+        os.makedirs(local_settings.USER_PATH + usertask, exist_ok=False)
+        os.makedirs(local_settings.USER_PATH + usertask + '/input', exist_ok=False)
+        os.makedirs(local_settings.USER_PATH + usertask + '/output/result', exist_ok=False)
+        os.makedirs(local_settings.USER_PATH + usertask + '/output/log', exist_ok=False)
 
-    #     is_demo_input = False
+        if inputtype == 'rundemo':
+            is_demo_input = True
+            shutil.copy(
+                local_settings.DEMO_ANALYSIS + demo_path[analysistype][species]['csv'], 
+                local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'])
+            user_input_path_csv = local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv']
+            shutil.copy(
+                local_settings.DEMO_ANALYSIS + demo_path[analysistype][species]['feature'], 
+                local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['feature'])
+            user_input_path_feature = local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['feature']
+        elif inputtype == 'upload':
+            assert 'CSV' in request.data.keys() and 'feature' in request.data.keys()
+            csvfile = request.FILES['CSV']
+            print('csvfile', csvfile)
+            _csv_path = default_storage.save(local_settings.USER_PATH + usertask + '/input/' + csvfile.name, ContentFile(csvfile.read()))
+            print('_csv_path', _csv_path)
+            user_input_path_csv = local_settings.USER_PATH + usertask + '/input/' + csvfile.name
+            featurefile = request.FILES['feature']
+            _feature_path = default_storage.save(local_settings.USER_PATH + usertask + '/input/' + featurefile.name, ContentFile(featurefile.read()))
+            user_input_path_feature = local_settings.USER_PATH + usertask + '/input/' + featurefile.name
+        # elif inputtype == 'paste':
+        #     assert 'CSVfile' in request.data.keys()
+        #     user_input_path_csv = local_settings.USER_PATH + usertask + '/input/csvfile.csv'
+        #     with open(user_input_path_csv, 'w') as file:
+        #         file.write(request.data['CSVfile'])
 
-    #     # if rundemo == 'true':
-    #     if request.data['inputtype'] == 'rundemo':
-    #         species = request.data['species']
-    #         is_demo_input = True
-    #         if analysistype == 'Single Celltype Mode':
-    #             shutil.copy(
-    #                 local_settings.DEMO_ANALYSIS + demo_path[analysistype][species]['csv'], 
-    #                 local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'])
-    #             # create new obj
-    #             newtask = craft_task.objects.create(
-    #                 user_id = request.data['userid'], 
-    #                 user_input_path = {
-    #                     'csv': local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'],
-    #                 }, 
-    #                 is_demo_input = is_demo_input,
-    #                 output_result_path = local_settings.USER_PATH + usertask + '/output/result/',
-    #                 output_log_path = local_settings.USER_PATH + usertask + '/output/log/',
-    #                 analysis_type = analysistype,
-    #                 species = species,
-    #                 status = 'Created',
-    #             )
-    #         elif analysistype == 'Multi-Celltype Mode':
-    #             shutil.copy(
-    #                 local_settings.DEMO_ANALYSIS + demo_path[analysistype][species]['csv'], 
-    #                 local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'])
-    #             shutil.copy(
-    #                 local_settings.DEMO_ANALYSIS + demo_path[analysistype][species]['feature'], 
-    #                 local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['feature'])
-                
-    #             # create new obj
-    #             newtask = craft_task.objects.create(
-    #                 job_id = '-1',
-    #                 user_id = request.data['userid'], 
-    #                 user_input_path = {
-    #                     'csv': local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['csv'],
-    #                     'feature': local_settings.USER_PATH + usertask + '/input/' + user_path[analysistype][species]['feature'],
-    #                 }, 
-    #                 is_demo_input = is_demo_input,
-    #                 output_result_path = local_settings.USER_PATH + usertask + '/output/result/',
-    #                 output_log_path = local_settings.USER_PATH + usertask + '/output/log/',
-    #                 analysis_type = analysistype,
-    #                 species = request.data['species'],
-    #                 status = 'Created',
-    #             )
+        # create new obj
+        newtask = craft_task.objects.create(
+            user_id = user_id, 
+            user_input_path = {
+                'csv': user_input_path_csv, # gene expression matrix
+                'feature': user_input_path_feature, # cell feature
+            }, 
+            is_demo_input = is_demo_input,
+            output_result_path = local_settings.USER_PATH + usertask + '/output/result/',
+            output_log_path = local_settings.USER_PATH + usertask + '/output/log/',
+            analysis_type = analysistype,
+            species = species,
+            status = 'Created',
+        )
 
-    #     # run task
-    #     res = {
-    #         'task_id': newtask.id,
-    #         'user_id': newtask.user_id,
-    #         'analysis_type': newtask.analysis_type,
-    #     }
-    #     taskdetail_dict = {
-    #         'user_input_path': newtask.user_input_path,
-    #         'output_result_path': newtask.output_result_path,
-    #         'output_log_path': newtask.output_log_path,
-    #         'species': newtask.species,
-    #         'analysis_type': newtask.analysis_type,
-    #     }
-    #     try:
-    #         taskdetail_dict = task.run_single_celltype_mode(taskdetail_dict)
-    #         res['status'] = 'Create Success'
-    #         res['message'] = 'Job create successfully'
-    #         newtask.job_id = taskdetail_dict['job_id']
-    #         newtask.status = taskdetail_dict['status']
-    #         newtask.status = 'Running'
-    #     except Exception as e:
-    #         res['status'] = 'Create Failed'
-    #         res['message'] = 'Job create failed'
-    #         newtask.status = 'Failed'
-    #         traceback.print_exc()
+        # run task
+        res = {
+            'task_id': newtask.id,
+            'user_id': newtask.user_id,
+            'analysis_type': newtask.analysis_type,
+        }
+        taskdetail_dict = {
+            'user_input_path': newtask.user_input_path,
+            'output_result_path': newtask.output_result_path,
+            'output_log_path': newtask.output_log_path,
+            'species': newtask.species,
+            'analysis_type': newtask.analysis_type,
+            'fileseparator': fileseparator,
+        }
+        try:
+            taskdetail_dict = task.run_multi_celltype_mode(taskdetail_dict)
+            res['status'] = 'Create Success'
+            res['message'] = 'Job create successfully'
+            newtask.job_id = taskdetail_dict['job_id']
+            newtask.status = taskdetail_dict['status']
+            newtask.status = 'Running'
+        except Exception as e:
+            res['status'] = 'Create Failed'
+            res['message'] = 'Job create failed'
+            newtask.status = 'Failed'
+            traceback.print_exc()
 
-    #     newtask.save()
+        newtask.save()
 
-    #     return Response(res)
+        return Response(res)
+    
 
 @api_view(['GET'])
 def viewtask(request):
@@ -275,6 +275,13 @@ def viewtaskresultlog(request):
 
     craft_result_log = task.get_job_result('Failed', task_obj.output_result_path)
     craft_result_keys = craft_result_log.keys()
+    if len(craft_result_log) == 0:
+        craft_result_keys = ['craft_result_key']
+        craft_result_log = {
+            'craft_result_key': {
+                'log_lines': 'The task is failed. \nNo result file is created. \nPlease check Task Log for details.'
+            }
+        }
     return Response([craft_result_keys, craft_result_log])
 
 @api_view(['GET'])

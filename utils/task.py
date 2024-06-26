@@ -41,6 +41,36 @@ def run_single_celltype_mode(info_dict):
         ' -e ' + output_log_path + 'craft.log' + \
         ' -f ' + fileseparator
     ) 
+    print('sbatch_command', sbatch_command)
+    sbatch_output = subprocess.check_output(sbatch_command, shell = True).decode("utf-8") # Submitted batch job 1410435
+    job_id = re.search(r"Submitted batch job (\d+)", sbatch_output).group(1) # 1410435
+    status = slurm_api.get_job_status(job_id) # PENDING
+    taskdetail_dict = {
+        'job_id': job_id,
+        'status': status,
+    }
+    return taskdetail_dict
+
+def run_multi_celltype_mode(info_dict):
+    user_input_path = info_dict['user_input_path']
+    output_result_path = info_dict['output_result_path']
+    output_log_path = info_dict['output_log_path']
+    species = info_dict['species']
+    analysis_type = info_dict['analysis_type']
+    fileseparator = info_dict['fileseparator']
+    sbatch_command = (
+        'sbatch' + \
+        ' --output=' + output_log_path + 'sbatch.out' + \
+        ' --error=' + output_log_path + 'sbatch.err' + \
+        ' ' +local_settings.SCRIPTS + 'CRUST_merfish_ileum.sh' + \
+        ' -a ' + user_input_path['csv'] + \
+        ' -b ' + user_input_path['feature'] + \
+        ' -c ' + output_result_path + \
+        ' -d ' + species + \
+        ' -e ' + output_log_path + 'craft.log' + \
+        ' -f ' + fileseparator
+    ) 
+    print('sbatch_command', sbatch_command)
     sbatch_output = subprocess.check_output(sbatch_command, shell = True).decode("utf-8") # Submitted batch job 1410435
     job_id = re.search(r"Submitted batch job (\d+)", sbatch_output).group(1) # 1410435
     status = slurm_api.get_job_status(job_id) # PENDING
@@ -107,13 +137,25 @@ def get_job_result(task_status, output_result_path):
 
 
 def check_task_result(output_result_path):
-    for _ in glob.glob(output_result_path + '/*'):
+    file_list = glob.glob(output_result_path + '/*')
+    if len(file_list) == 0:
+        print(output_result_path)
+        print('Conformation reconstruction failed 1')
+        return False
+    for _ in file_list:
         name = _.strip().split('/')[-1]    
         with open(output_result_path + name + '/' + name + '.log') as f:
             L = f.readlines()
+        line_str = ''
         for l in L:
-            if 'failed' in l:
-                return False
+            line_str += l
+        if line_str == '' or 'failed' in l:
+            print('Conformation reconstruction failed 2')
+            return False
+        elif not 'conformation reconstruction finished' in l:
+            print('Conformation reconstruction failed 3 in ', end='')
+            print(output_result_path + name + '/' + name + '.log')
+            return False
     return True
     
 def init_taskdetail_dict(info_dict):

@@ -66,7 +66,8 @@ def get_job_status(job_id):
             return lines[1].strip()
     except subprocess.CalledProcessError as e:
         print("squeue check error:", e, file=sys.stderr)
-        pass
+        print('job_id', job_id)
+        # pass
 
     sacct_command = ["sacct", "--jobs", str(job_id), "--format=JobID,State"]
     try:
@@ -74,6 +75,7 @@ def get_job_status(job_id):
         sacct_output = subprocess.check_output(sacct_command).decode("utf-8")
     except subprocess.CalledProcessError as e:
         print("sacct check error:", e, file=sys.stderr)
+        print('job_id', job_id)
         return None
     lines = sacct_output.strip().split("\n")
     for line in lines[1:]:
