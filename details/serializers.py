@@ -43,9 +43,21 @@ class detailsSerializer(serializers.ModelSerializer):
                 species_common = 'Lung'
             elif 'Liver' in slice_id:
                 species_common = 'Liver'
+            elif 'human_breast_cancer' in slice_id:
+                species_common = 'Xenium_BreastCancer'
         elif species == 'Mus musculus (Mice)':
-            if 'Brain' in slice_id:
+            if slice_id == 'MERFISH_MICE_ILEUM':
+                species_common = 'merfish_ileum'
+            elif 'Brain' in slice_id:
                 species_common = 'Mice_Brain'
             else:
                 species_common = 'Mice'
-        return local_settings.CRUSTDB_DATABASE+species_common+'/'+obj.repeat_data_uid+'/'
+        
+        if species_common == 'merfish_ileum':
+            _data_uid = obj.repeat_data_uid.replace('MERFISH_MICE_ILEUM.csv', 'transcripts.gem.csv')
+        elif species_common == 'Xenium_BreastCancer':
+            _data_uid = 'transcripts.gem.csv.Cluster.' + obj.repeat_data_uid
+        else:
+            _data_uid = obj.repeat_data_uid
+
+        return local_settings.CRUSTDB_DATABASE+species_common+'/'+_data_uid+'/'

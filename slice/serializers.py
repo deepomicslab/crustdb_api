@@ -135,6 +135,32 @@ adata_map = {
             'Run_Tissue_name': 'NormalLiver',
         },
     },
+    'MERFISH_MICE_ILEUM': {
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'baysor_membrane_prior_cell_feature.csv',
+        'x': 'x',
+        'y': 'y',
+        'annotation': 'leiden_final',
+    },
+
+    # None
+    'human_breast_cancer_S1R1': {
+        'path': '#',
+        'x': 'x',
+        'y': 'y',
+        'annotation': 'annotation',
+    },
+    'human_breast_cancer_S1R2': {
+        'path': '#',
+        'x': 'x',
+        'y': 'y',
+        'annotation': 'annotation',
+    },
+    'human_breast_cancer_S2': {
+        'path': '#',
+        'x': 'x',
+        'y': 'y',
+        'annotation': 'annotation',
+    },
 }
 
 

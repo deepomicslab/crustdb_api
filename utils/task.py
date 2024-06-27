@@ -127,7 +127,7 @@ def get_job_result(task_status, output_result_path):
                 'sample_name': re_match('Sample Name: ', '\n', log_lines),
                 'seed': int(re_match('Seed: ', '\n', log_lines)),
                 'gene_filter_threshold': float(re_match('Threshold for gene filter is: ', '\n', log_lines)),
-                'anchor_gene_proportion': float(re_match('Number of genes used for Rotation Derivation is: ', '\n', log_lines)),
+                'anchor_gene_proportion': float(re_match('genes used for Rotation Derivation is: ', '\n', log_lines)),
                 'task_id': re_match('Task ID: ', '\n', log_lines), # craft task id, i.e., the random 4-char string
                 'inferred_trans_center_num': int(re_match('Number of total Transcription centers is: ', '\n', log_lines)),
                 'distance_list': distance_list,

@@ -1,6 +1,8 @@
 import django
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Phage_api.settings")
+import re
+import csv
 
 django.setup()
 
@@ -28,6 +30,9 @@ convergence_fail_record = [
     'NormalLiver.gem.csv.cellType.Hep.5_RU6F',
 ]
 
+def re_match(start, end, str):
+    _, res = re.findall(r"("+start+r")\s*(.*?)\s*(?!\1)(?:"+end+r")", str)[0]
+    return res
 
 def add_data():
     from crustdb_main.models import crustdb_main
@@ -37,7 +42,8 @@ def add_data():
         csv_lines = f.readlines()
 
     for line in csv_lines[1:]:
-        l = line.strip().split(",")
+        # l = line.strip().split(",")
+        l = list(csv.reader([line], delimiter=',', quotechar='"'))[0]
         data_uid = l[1]
 
         if data_uid in convergence_fail_record:
@@ -67,8 +73,12 @@ def add_data():
                 species_common = 'Lung'
             elif 'Liver' in slice_id:
                 species_common = 'Liver'
+            elif 'human_breast_cancer' in slice_id:
+                species_common = 'Xenium_BreastCancer'
         elif species == 'Mus musculus (Mice)':
-            if 'Brain' in slice_id:
+            if slice_id == 'MERFISH_MICE_ILEUM':
+                species_common = 'merfish_ileum'
+            elif 'Brain' in slice_id:
                 species_common = 'Mice_Brain'
             else:
                 species_common = 'Mice'
@@ -79,11 +89,21 @@ def add_data():
 
         log_lines = None
         try:
-            with open(local_settings.CRUSTDB_DATABASE + species_common + '/' + data_uid + '/' + data_uid + '.log', 'r') as f:
-                log_lines = f.readlines()
+            if species_common == 'merfish_ileum':
+                _data_uid = data_uid.replace('MERFISH_MICE_ILEUM.csv', 'transcripts.gem.csv')
+            elif species_common == 'Xenium_BreastCancer':
+                _data_uid = 'transcripts.gem.csv.Cluster.' + data_uid
+            else:
+                _data_uid = data_uid
+            
+            with open(local_settings.CRUSTDB_DATABASE + species_common + '/' + _data_uid + '/' + _data_uid + '.log', 'r') as f:
+                L = f.readlines()
+            log_lines = ''
+            for i in L:
+                log_lines += i
 
-            cell_num = int(log_lines[3].strip().split(' ')[2])
-            gene_num = int(log_lines[4].strip().split(' ')[2])
+            cell_num = int(re_match('Cell Number: ', '\n', log_lines))            
+            gene_num = int(re_match('Gene Number: ', '\n', log_lines))
             repeat_data_uid_list = [repeat_data_uid]
 
             crustdb_main.objects.create(
@@ -104,8 +124,11 @@ def add_data():
             )
         except Exception as e:
             print(e)
-            print('UID', data_uid)
-            print("log_lines:", log_lines, '\n')
+            print('path:', species_common + '/' + _data_uid + '/' + _data_uid + '.log')
+            print('species:', species)
+            print('UID:', data_uid)
+            print()
+            # print("log_lines:", log_lines, '\n')
 
 
 if __name__ == "__main__":

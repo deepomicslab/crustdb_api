@@ -47,12 +47,17 @@ def get_species(species, slice_id):
             species_common = 'Lung'
         elif 'Liver' in slice_id:
             species_common = 'Liver'
+        elif 'human_breast_cancer' in slice_id:
+            species_common = 'Xenium_BreastCancer'
     elif species == 'Mus musculus (Mice)':
-        if 'Brain' in slice_id:
+        if slice_id == 'MERFISH_MICE_ILEUM':
+            species_common = 'merfish_ileum'
+        elif 'Brain' in slice_id:
             species_common = 'Mice_Brain'
         else:
             species_common = 'Mice'
     return species_common
+
 
 class topologyView(APIView):    
     def get(self, request, *args, **kwargs):

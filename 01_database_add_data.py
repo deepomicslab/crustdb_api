@@ -15,7 +15,7 @@ def log(log_str):
     f.write(get_current_datetime() + log_str)
     f.close()
 
-# Remember to use 06_check_convergence_fail.ipynb to check
+# # ======= Remember to use 06_check_convergence_fail.ipynb to check ======= 
 
 # import_crustdb_main.add_data()
 # log(" [completed] scripts.import_crustdb_main\n")
@@ -23,19 +23,20 @@ def log(log_str):
 # import_details.add_data()
 # log(" [completed] scripts.import_details\n")
 
-# Remember to update workspace/crustdb_database/main/datasets.json
+# # ======= Remember to update workspace/crustdb_database/main/datasets.json ======= 
 # import_publication.add_data()
 # log(" [completed] scripts.import_publication\n")
 
+# # ======= Remember to update crustdb_api/slice/serializers.py adata_map ======= 
 # import_slice.add_data()
 # log(" [completed] scripts.import_slice\n")
 
 # import_celltype.add_data()
 # log(" [completed] scripts.import_celltype\n")
 
-# Remenber to maintain 07_check_topology_notexist.ipynb before adding topology/graph/general_node/graph_node
+# # ======= Remenber to maintain 07_check_topology_notexist.ipynb before adding topology/graph/general_node/graph_node ======= 
 # import_topology.add_data()
 # log(" [completed] scripts.import_topology, graph, general_node, graph_node\n")
 
-import_craft_task.add_data()
-log(" [completed] scripts.import_craft_task \n")
+# import_craft_task.add_data()
+# log(" [completed] scripts.import_craft_task \n")

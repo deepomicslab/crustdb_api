@@ -1,9 +1,13 @@
 import django
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Phage_api.settings")
+import re
 
 django.setup()
 
+def re_match(start, end, str):
+    _, res = re.findall(r"("+start+r")\s*(.*?)\s*(?!\1)(?:"+end+r")", str)[0]
+    return res
 
 def add_data():
     from Phage_api import settings_local as local_settings
@@ -24,15 +28,15 @@ def add_data():
                 species_common = 'Lung'
             elif 'Liver' in obj.slice_id:
                 species_common = 'Liver'
+            elif 'human_breast_cancer' in obj.slice_id:
+                species_common = 'Xenium_BreastCancer'
         elif obj.species == 'Mus musculus (Mice)':
-            if 'Brain' in obj.slice_id:
+            if obj.slice_id == 'MERFISH_MICE_ILEUM':
+                species_common = 'merfish_ileum'
+            elif 'Brain' in obj.slice_id:
                 species_common = 'Mice_Brain'
             else:
                 species_common = 'Mice'
-        # else:
-        #     print('========= Error when adding data to DB ==========')
-        #     print('Species', obj.species)
-        #     break
 
         # loop all repeats
         for repeat_data_uid in obj.repeat_data_uid_list:
@@ -41,40 +45,33 @@ def add_data():
             try:
 
                 # read info from log file
-                with open(local_settings.CRUSTDB_DATABASE + species_common + '/' + data_uid + '/' + data_uid + '.log', 'r') as f:
-                    log_lines = f.readlines()
+                if species_common == 'merfish_ileum':
+                    _data_uid = data_uid.replace('MERFISH_MICE_ILEUM.csv', 'transcripts.gem.csv')
+                elif species_common == 'Xenium_BreastCancer':
+                    _data_uid = 'transcripts.gem.csv.Cluster.' + data_uid
+                else:
+                    _data_uid = data_uid
+                
+                with open(local_settings.CRUSTDB_DATABASE + species_common + '/' + _data_uid + '/' + _data_uid + '.log', 'r') as f:
+                    L = f.readlines()
+                log_lines = ''
+                for i in L:
+                    log_lines += i
 
-                # check the convergence distances
                 distance_list = []
-                for i in range(14, len(log_lines) - 1):
-                    if log_lines[i].find("Distance") == -1:
+
+                for i in range(len(L)):
+                    if L[i].find("RMSD") == -1 and L[i].find("Distance") == -1:
                         continue
-                    distance_list.append(log_lines[i].strip().split(' ')[-1])
-
-                    # ================================
-                    # use `06_check_convergence_fail.ipynb` to check convergence-fail records
-                    # ================================
-
-                # # if converfence failed, delete the repeat; if all repeats fail, delete the conformation record
-                # if len(distance_list) == 0:
-                #     obj.repeat_data_uid_list.remove(repeat_data_uid)
-                #     obj.conformation_num -= 1
-                #     if obj.conformation_num == 0:
-                #         obj.delete()
-                # # o/w, create this details object
-                # else:
-
+                    distance_list.append(L[i].strip().split(' ')[-1])  
                 details.objects.create(
                     repeat_data_uid=data_uid,
-                    seed=int(log_lines[2].strip().split(' ')[-1]),
-                    sample_name=log_lines[5].strip().split(' ')[-1],
-                    gene_filter_threshold=float(
-                        log_lines[6].strip().split(' ')[-1]),
-                    anchor_gene_proportion=float(
-                        log_lines[7].strip().split(' ')[-1]),
-                    task_id=log_lines[8].strip().split(' ')[-1],
-                    inferred_trans_center_num=int(
-                        log_lines[-1].strip().split(' ')[-1]),
+                    seed=int(re_match('Seed: ', '\n', log_lines)),
+                    sample_name=re_match('Sample Name: ', '\n', log_lines),
+                    gene_filter_threshold=float(re_match('Threshold for gene filter is: ', '\n', log_lines)),
+                    anchor_gene_proportion=float(re_match('genes used for Rotation Derivation is: ', '\n', log_lines)),
+                    task_id=re_match('Task ID: ', '\n', log_lines),
+                    inferred_trans_center_num=int(re_match('Number of total Transcription centers is: ', '\n', log_lines)),
                     distance_list=distance_list,
                 )
 
