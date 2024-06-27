@@ -57,7 +57,7 @@ def run_multi_celltype_mode(info_dict):
     output_log_path = info_dict['output_log_path']
     species = info_dict['species']
     analysis_type = info_dict['analysis_type']
-    fileseparator = info_dict['fileseparator']
+    # fileseparator = info_dict['fileseparator'] # sep
     sbatch_command = (
         'sbatch' + \
         ' --output=' + output_log_path + 'sbatch.out' + \
@@ -68,7 +68,11 @@ def run_multi_celltype_mode(info_dict):
         ' -c ' + output_result_path + \
         ' -d ' + species + \
         ' -e ' + output_log_path + 'craft.log' + \
-        ' -f ' + fileseparator
+        ' -f ' + info_dict['sep'] + \
+        ' -g ' + info_dict['ctkey'] + \
+        ' -h ' + info_dict['csep'] + \
+        ' -i ' + info_dict['cikey'] + \
+        ' -j ' + info_dict['number']
     ) 
     print('sbatch_command', sbatch_command)
     sbatch_output = subprocess.check_output(sbatch_command, shell = True).decode("utf-8") # Submitted batch job 1410435

@@ -151,14 +151,15 @@ class craft_single_celltype_View(APIView):
     
 class craft_multi_celltype_View(APIView):    
     def post(self, request, *args, **kwargs):
-        # print('--------------request.data', request.data)
+        print('--------------request.data', request.data)
         # print('==============request.FILES', request.FILES)
         analysistype = request.data['analysistype']
         assert analysistype == 'Multi-Celltype Mode'
-        species = request.data['species']
-        fileseparator = request.data['fileseparator']
-        inputtype = request.data['inputtype']
         user_id = request.data['userid']
+        inputtype = request.data['inputtype']
+        species = request.data['species']
+        # fileseparator = request.data['fileseparator'] ## sep
+        
         is_demo_input = False
 
         usertask = str(int(time.time()))+'_' + generate_id()
@@ -220,7 +221,12 @@ class craft_multi_celltype_View(APIView):
             'output_log_path': newtask.output_log_path,
             'species': newtask.species,
             'analysis_type': newtask.analysis_type,
-            'fileseparator': fileseparator,
+            # 'fileseparator': fileseparator, # sep
+            'sep': request.data['sep'],
+            'ctkey': request.data['ctkey'],
+            'csep': request.data['csep'],
+            'cikey': request.data['cikey'],
+            'number': request.data['number'],
         }
         try:
             taskdetail_dict = task.run_multi_celltype_mode(taskdetail_dict)
