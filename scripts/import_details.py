@@ -48,7 +48,7 @@ def add_data():
                 if species_common == 'merfish_ileum':
                     _data_uid = data_uid.replace('MERFISH_MICE_ILEUM.csv', 'transcripts.gem.csv')
                 elif species_common == 'Xenium_BreastCancer':
-                    _data_uid = 'transcripts.gem.csv.Cluster.' + data_uid
+                    _data_uid = data_uid.replace(obj.slice_id, 'transcripts.gem.csv.Cluster')
                 else:
                     _data_uid = data_uid
                 

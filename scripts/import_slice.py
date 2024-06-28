@@ -11,8 +11,8 @@ def add_data():
     from slice.models import slice
     from django.db.models import Sum
 
-    slice_objs = crustdb_main.objects.all().distinct('slice_id')
-    for obj in slice_objs:
+    crustdb_main_objs = crustdb_main.objects.all().distinct('slice_id')
+    for obj in crustdb_main_objs:
         slice.objects.create(
             slice_id = obj.slice_id,
             publication_doi = crustdb_main.objects.filter(slice_id = obj.slice_id).first().doi,

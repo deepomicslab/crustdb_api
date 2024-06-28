@@ -141,25 +141,23 @@ adata_map = {
         'y': 'y',
         'annotation': 'leiden_final',
     },
-
-    # None
     'human_breast_cancer_S1R1': {
-        'path': '#',
-        'x': 'x',
-        'y': 'y',
-        'annotation': 'annotation',
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'GSM7780153_Xenium_R1_Fig1-5_supervised.csv',
+        'x': 'x_centroid',
+        'y': 'y_centroid',
+        'annotation': 'Cluster',
     },
     'human_breast_cancer_S1R2': {
-        'path': '#',
-        'x': 'x',
-        'y': 'y',
-        'annotation': 'annotation',
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'GSM7780154_Xenium_R2_Fig1-5_supervised.csv',
+        'x': 'x_centroid',
+        'y': 'y_centroid',
+        'annotation': 'Cluster',
     },
     'human_breast_cancer_S2': {
-        'path': '#',
-        'x': 'x',
-        'y': 'y',
-        'annotation': 'annotation',
+        'path': local_settings.CRUSTDB_DATABASE+'adata/'+'GSM7780155_Xenium_Fig_6_unsupervised.csv',
+        'x': 'x_centroid',
+        'y': 'y_centroid',
+        'annotation': 'Cluster',
     },
 }
 
