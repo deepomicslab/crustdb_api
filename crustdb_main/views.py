@@ -35,9 +35,7 @@ class LargeResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'pagesize'
     max_page_size = 10000
 
-
-class crustdbMainViewSet(APIView):
-    # queryset = crustdb_main.objects.order_by('id')
+def get_crustdb_main_with_annotated_field():
     queryset = crustdb_main.objects.annotate(
         inferred_trans_center_num = details.objects.filter(
             repeat_data_uid = Concat(
@@ -47,6 +45,11 @@ class crustdbMainViewSet(APIView):
             ),
             ).values('inferred_trans_center_num')
         ).order_by('id')
+    return queryset
+
+class crustdbMainViewSet(APIView):
+    # queryset = crustdb_main.objects.order_by('id')
+    queryset = get_crustdb_main_with_annotated_field()
         
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
@@ -56,7 +59,6 @@ class crustdbMainViewSet(APIView):
 
         if 'filter' in querydict and querydict['filter'] != '':
             filter = json.loads(querydict['filter'])
-            # if filter['st_platform'] or filter['species'] or filter['disease_stage'] or filter['developmental_stage'] or filter['sex'] or filter['cell_type']:
             q_expression = Q()
             if filter['st_platform']:
                 q_expression &= Q(st_platform__in=filter['st_platform'])
@@ -72,7 +74,7 @@ class crustdbMainViewSet(APIView):
             if filter['cell_type']:
                 q_expression &= Q(cell_type__in=filter['cell_type'])
             # self.queryset = crustdb_main.objects.filter(q_expression)
-            self.queryset = self.queryset.filter(q_expression)
+            self.queryset = get_crustdb_main_with_annotated_field().filter(q_expression)
 
         order = ''
         columnKey = ''
@@ -105,7 +107,8 @@ class crustdbMainViewSet(APIView):
 
 
 class crustdb_sliceView(APIView):
-    queryset = crustdb_main.objects.order_by('id')
+    # queryset = crustdb_main.objects.order_by('id')
+    queryset = get_crustdb_main_with_annotated_field()
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
@@ -114,10 +117,11 @@ class crustdb_sliceView(APIView):
 
         if 'slice_id' in querydict:
             slice_id = slice.objects.get(id=querydict['slice_id']).slice_id
-            self.queryset = crustdb_main.objects.filter(
-                slice_id=slice_id).order_by('id')
+            # self.queryset = crustdb_main.objects.filter(slice_id=slice_id).order_by('id')
+            self.queryset = get_crustdb_main_with_annotated_field().filter(slice_id=slice_id).order_by('id')
         else:
-            self.queryset = crustdb_main.objects.order_by('id')
+            # self.queryset = crustdb_main.objects.order_by('id')
+            self.queryset = get_crustdb_main_with_annotated_field()
 
         if 'filter' in querydict and querydict['filter'] != '':
             q_expression = Q()
@@ -156,7 +160,8 @@ class crustdb_sliceView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 class crustdb_celltypeView(APIView):
-    queryset = crustdb_main.objects.order_by('id')
+    # queryset = crustdb_main.objects.order_by('id')
+    queryset = get_crustdb_main_with_annotated_field()
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
@@ -165,10 +170,11 @@ class crustdb_celltypeView(APIView):
 
         if 'cell_type' in querydict:
             cell_type=querydict['cell_type']
-            self.queryset = crustdb_main.objects.filter(
-                cell_type=cell_type).order_by('id')
+            # self.queryset = crustdb_main.objects.filter(cell_type=cell_type).order_by('id')
+            self.queryset = get_crustdb_main_with_annotated_field().filter(cell_type=cell_type).order_by('id')
         else:
-            self.queryset = crustdb_main.objects.order_by('id')
+            # self.queryset = crustdb_main.objects.order_by('id')
+            self.queryset = get_crustdb_main_with_annotated_field()
 
         if 'filter' in querydict and querydict['filter'] != '':
             q_expression = Q()
@@ -254,42 +260,43 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 
 class crustdb_stereoViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(
-        st_platform='Stereo-seq').order_by('id')
+    # queryset = crustdb_main.objects.filter(st_platform='Stereo-seq').order_by('id')
+    queryset = get_crustdb_main_with_annotated_field().filter(st_platform='Stereo-seq').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
 
 class crustdb_cosmxViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(st_platform='CosMx').order_by('id')
+    # queryset = crustdb_main.objects.filter(st_platform='CosMx').order_by('id')
+    queryset = get_crustdb_main_with_annotated_field().filter(st_platform='CosMx').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
 
 class crustdb_merfishViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(
-        st_platform='MERFISH').order_by('id')
+    # queryset = crustdb_main.objects.filter(st_platform='MERFISH').order_by('id')
+    queryset = get_crustdb_main_with_annotated_field().filter(st_platform='MERFISH').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
 
 class crustdb_humanViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(
-        species='Homo sapiens (Human)').order_by('id')
+    # queryset = crustdb_main.objects.filter(species='Homo sapiens (Human)').order_by('id')
+    queryset = get_crustdb_main_with_annotated_field().filter(species='Homo sapiens (Human)').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
 
 class crustdb_miceViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(
-        species='Mus musculus (Mouse)').order_by('id')
+    # queryset = crustdb_main.objects.filter(species='Mus musculus (Mouse)').order_by('id')
+    queryset = get_crustdb_main_with_annotated_field().filter(species='Mus musculus (Mouse)').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
 
 class crustdb_axolotlsViewSet(viewsets.ModelViewSet):
-    queryset = crustdb_main.objects.filter(
-        species='Ambystoma mexicanum (Axolotl)').order_by('id')
+    # queryset = crustdb_main.objects.filter(species='Ambystoma mexicanum (Axolotl)').order_by('id')
+    queryset = get_crustdb_main_with_annotated_field().filter(species='Ambystoma mexicanum (Axolotl)').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
@@ -331,8 +338,8 @@ class crustdb_filterView(APIView):
             cell_num_max = filterdatajson['cell_num_max']
             q_expression &= Q(cell_num__lte=cell_num_max,
                               cell_num__gte=cell_num_min)
-        total_queryset = crustdb_main.objects.filter(
-            q_expression).order_by('id')
+        # total_queryset = crustdb_main.objects.filter(q_expression).order_by('id')
+        total_queryset = get_crustdb_main_with_annotated_field().filter(q_expression).order_by('id')
         paginator = LargeResultsSetPagination()
         paginated_crusts = paginator.paginate_queryset(
             total_queryset, request, view=self)
