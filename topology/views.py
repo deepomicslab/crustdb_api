@@ -63,9 +63,7 @@ class topologyView(APIView):
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
         assert 'graph_selection_str' in querydict # topologyid_55-KNN_SNN-10.pkl
-        
         graph_selection_str = querydict['graph_selection_str']
-        # print('topo -----------', graph_selection_str, graph_selection_str.split('-'))
         type = graph_selection_str.split('-')[1]
         pkl = graph_selection_str.split('-')[2]
 
@@ -75,7 +73,6 @@ class topologyView(APIView):
         crustdb_main_obj = crustdb_main.objects.get(uniq_data_uid = uid[:-5])
         species = get_species(crustdb_main_obj.species, crustdb_main_obj.slice_id)
         graph_obj = graph.objects.filter(topology_id = topology_id, type = type, pkl = pkl).first()
-        # print('-------', topology_id, type, pkl)
 
         graphAttr = {
             'average_branching_factor': graph_obj.average_branching_factor,
@@ -100,7 +97,6 @@ class topologyView(APIView):
         node_index_map = {}
         for idx, x in enumerate(nodeInfoList[:, 0]):
             if x in list(node_index_map.keys()):
-                # print('topology view ------- repeat')
                 continue
             node_index_map[x] = idx
 
@@ -111,8 +107,6 @@ class topologyView(APIView):
         with open('/home/platform/project/crustdb_platform/crustdb_api/08_networkx_graph_mst_parentchild_relation.pkl', 'rb') as handle:
             mst_parentchild_relation = pickle.load(handle)
         
-        # print('------', nodeInfoList.to_numpy().shape)
-
         return Response([nodeInfoList, edgeList, graphAttr, mst_parentchild_relation])
 
 class topology_nodeattrView(APIView):    
