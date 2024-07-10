@@ -14,7 +14,10 @@ from rest_framework.response import Response
 from phage_hosts.models import phage_hosts
 from phage_lifestyle.models import phage_lifestyle
 import json
-from django.db.models import Q
+from django.db import models
+from django.db.models import Q, F, Subquery, OuterRef, Value
+from django.contrib.postgres.fields import ArrayField
+from django.db.models.functions import Concat
 from Phage_api import settings_local as local_settings
 from django.http import FileResponse
 from rest_framework.decorators import api_view
@@ -34,22 +37,26 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 
 class crustdbMainViewSet(APIView):
-    # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
-    queryset = crustdb_main.objects.order_by('id')
+    # queryset = crustdb_main.objects.order_by('id')
+    queryset = crustdb_main.objects.annotate(
+        inferred_trans_center_num = details.objects.filter(
+            repeat_data_uid = Concat(
+                OuterRef('uniq_data_uid'), 
+                Value('_'), 
+                OuterRef('repeat_data_uid_list__0')
+            ),
+            ).values('inferred_trans_center_num')
+        ).order_by('id')
+        
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
     def get(self, request):
-        # print('========================== get')
-        # print('========================== request', request.query_params.dict())
         querydict = request.query_params.dict()
 
         if 'filter' in querydict and querydict['filter'] != '':
-            # print('=========== querydict[\'filter\']', querydict['filter'])
             filter = json.loads(querydict['filter'])
-            # print('================== filter', filter)
             # if filter['st_platform'] or filter['species'] or filter['disease_stage'] or filter['developmental_stage'] or filter['sex'] or filter['cell_type']:
-            # print(filter['species'], filter['species'] == None)
             q_expression = Q()
             if filter['st_platform']:
                 q_expression &= Q(st_platform__in=filter['st_platform'])
@@ -64,10 +71,8 @@ class crustdbMainViewSet(APIView):
                 q_expression &= Q(sex__in=filter['sex'])
             if filter['cell_type']:
                 q_expression &= Q(cell_type__in=filter['cell_type'])
-                # print('============ q_expression', q_expression)
-            # print('=======length', len(self.queryset.all()))
-            self.queryset = crustdb_main.objects.filter(q_expression)
-            # print('=======length', len(self.queryset.all()))
+            # self.queryset = crustdb_main.objects.filter(q_expression)
+            self.queryset = self.queryset.filter(q_expression)
 
         order = ''
         columnKey = ''
@@ -76,13 +81,13 @@ class crustdbMainViewSet(APIView):
             columnKey = querydict['columnKey']
             if order == 'false':
                 self.queryset = self.queryset.order_by('id')
-                # self.queryset = crustdb_main.objects.order_by('id')
             elif order == 'ascend':
                 self.queryset = self.queryset.order_by(columnKey)
-                # self.queryset = crustdb_main.objects.order_by(columnKey)
             else:  # 'descend
                 self.queryset = self.queryset.order_by('-'+columnKey)
-                # self.queryset = crustdb_main.objects.order_by('-'+columnKey)
+
+        # print(self.queryset.query)
+        # print(self.queryset.__dict__)
 
         paginator = self.pagination_class()
         result_page = paginator.paginate_queryset(self.queryset, request)
@@ -100,14 +105,11 @@ class crustdbMainViewSet(APIView):
 
 
 class crustdb_sliceView(APIView):
-    # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
     queryset = crustdb_main.objects.order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
     def get(self, request):
-        # print('========================== get')
-        # print('========================== request', request.query_params.dict())
         querydict = request.query_params.dict()
 
         if 'slice_id' in querydict:
@@ -119,11 +121,7 @@ class crustdb_sliceView(APIView):
 
         if 'filter' in querydict and querydict['filter'] != '':
             q_expression = Q()
-            # print('=========== querydict[\'filter\']', querydict['filter'])
             filter = json.loads(querydict['filter'])
-            # print('================== filter', filter)
-            # if filter['st_platform'] or filter['species'] or filter['disease_stage'] or filter['developmental_stage'] or filter['sex'] or filter['cell_type']:
-            # print(filter['species'], filter['species'] == None)
             if filter['st_platform']:
                 q_expression &= Q(st_platform__in=filter['st_platform'])
             if filter['species']:
@@ -137,10 +135,7 @@ class crustdb_sliceView(APIView):
                 q_expression &= Q(sex__in=filter['sex'])
             if filter['cell_type']:
                 q_expression &= Q(cell_type__in=filter['cell_type'])
-                # print('============ q_expression', q_expression)
-            # print('=======length', len(self.queryset.all()))
             self.queryset = self.queryset.filter(q_expression).order_by('id')
-            # print('=======length', len(self.queryset.all()))
 
         order = ''
         columnKey = ''
@@ -148,7 +143,6 @@ class crustdb_sliceView(APIView):
             sorter = json.loads(querydict['sorter'])
             order = sorter['order']
             columnKey = sorter['columnKey']
-            # print('===============', order, columnKey)
             if order == 'false':
                 self.queryset = self.queryset.order_by('id')
             elif order == 'ascend':
@@ -162,14 +156,11 @@ class crustdb_sliceView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 class crustdb_celltypeView(APIView):
-    # print('url view crustdbMainViewSet ', crustdb_main.objects.order_by('id').first())
     queryset = crustdb_main.objects.order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
     def get(self, request):
-        # print('========================== get')
-        # print('========================== request', request.query_params.dict())
         querydict = request.query_params.dict()
 
         if 'cell_type' in querydict:
@@ -181,11 +172,7 @@ class crustdb_celltypeView(APIView):
 
         if 'filter' in querydict and querydict['filter'] != '':
             q_expression = Q()
-            # print('=========== querydict[\'filter\']', querydict['filter'])
             filter = json.loads(querydict['filter'])
-            # print('================== filter', filter)
-            # if filter['st_platform'] or filter['species'] or filter['disease_stage'] or filter['developmental_stage'] or filter['sex'] or filter['cell_type']:
-            # print(filter['species'], filter['species'] == None)
             if filter['st_platform']:
                 q_expression &= Q(st_platform__in=filter['st_platform'])
             if filter['species']:
@@ -199,10 +186,7 @@ class crustdb_celltypeView(APIView):
                 q_expression &= Q(sex__in=filter['sex'])
             if filter['cell_type']:
                 q_expression &= Q(cell_type__in=filter['cell_type'])
-                # print('============ q_expression', q_expression)
-            # print('=======length', len(self.queryset.all()))
             self.queryset = self.queryset.filter(q_expression).order_by('id')
-            # print('=======length', len(self.queryset.all()))
 
         order = ''
         columnKey = ''
@@ -220,7 +204,6 @@ class crustdb_celltypeView(APIView):
         paginator = self.pagination_class()
         result_page = paginator.paginate_queryset(self.queryset, request)
         serializer = crustdbSerializer(result_page, many=True)
-        # print('serializer', serializer.data)
 
         num_arr = ['cell_num', 'gene_num', 'conformation_num']
         common_items = []
@@ -249,7 +232,6 @@ class crustdbView(APIView):
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
         # queryset = None
-        # print('============================= crustdb_main views querydict', querydict)
         if 'id' in querydict:
             id = request.query_params.dict()['id']
             crustdb_main_obj = crustdb_main.objects.get(id=id)
@@ -319,9 +301,7 @@ class crustdb_axolotlsViewSet(viewsets.ModelViewSet):
 
 class crustdb_filterView(APIView):
     def post(self, request, *args, **kwargs):
-        # print('=============================== phage views request.data', request.data)
         filterdatajson = json.loads(request.data['filterdata'])
-        # print('=============================== phage views filterdatajson', filterdatajson)
         q_expression = Q()
         if filterdatajson['st_platform'] != '':
             st_platform = filterdatajson['st_platform']

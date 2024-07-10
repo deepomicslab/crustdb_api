@@ -8,28 +8,20 @@ except ImportError:
 
 class crustdbSerializer(serializers.ModelSerializer):
 
-    # lifestyle = serializers.SerializerMethodField()
-
-    # fastapath = serializers.SerializerMethodField()
-    # gbkpath = serializers.SerializerMethodField()
-    # gffpath = serializers.SerializerMethodField()
     # adatapath = serializers.SerializerMethodField()
     # zippedpath = serializers.SerializerMethodField()
+    inferred_trans_center_num = serializers.SerializerMethodField()
     
     class Meta:
         model = crustdb_main
         # exclude = ['data_uid']
         fields = '__all__'
 
-    # def get_fastapath(self, obj):
-    #     return 'empty.fasta'
-
-    # def get_gbkpath(self, obj):
-    #     return 'empty.gbk'
-    
-    # def get_gffpath(self, obj):
-    #     # return local_settings.PHAGEGFF+str(obj.Data_Sets.name)+'/'+obj.Acession_ID+'.gff3'
-    #     return 'empty.gff3'
+    def get_inferred_trans_center_num(self, obj):
+        if hasattr(obj, 'inferred_trans_center_num'):
+            return obj.inferred_trans_center_num
+        else:
+            return None
     
     # def get_adatapath(self, obj):
     #     import re
