@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import django
+from django.db.models import OuterRef, F, Q
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
@@ -11,6 +12,7 @@ import json
 from slice.models import slice
 from slice.serializers import sliceSerializer
 from crustdb_main.models import crustdb_main
+from publication.models import publication
 
 
 class LargeResultsSetPagination(PageNumberPagination):
@@ -20,7 +22,12 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 
 class sliceViewSet(APIView):
-    queryset = slice.objects.all()
+    # queryset = slice.objects.all()
+    queryset = slice.objects.annotate(
+        publication_title = publication.objects.filter(
+            id = OuterRef('publication_id'),
+        ).values('title')
+    )
     serializer_class = sliceSerializer
     pagination_class = LargeResultsSetPagination
 
@@ -31,10 +38,30 @@ class sliceViewSet(APIView):
         if 'slices' in querydict:
             slices = json.loads(querydict['slices'])['data']
             queryset = self.queryset.filter(slice_id__in=slices).order_by('id')
+        
+        elif 'slice_id' in querydict:
+            slice_id = querydict['slice_id']
+            queryset = self.queryset.filter(id=slice_id)
 
-        if 'doi' in querydict:
-            doi = querydict['doi']
-            queryset = self.queryset.filter(publication_doi=doi).order_by('id')
+        if 'filter' in querydict and querydict['filter'] != '':
+            filter = json.loads(querydict['filter'])
+            q_expression = Q()
+            if filter['st_platform']:
+                q_expression &= Q(st_platform__in=filter['st_platform'])
+            if filter['species']:
+                q_expression &= Q(species__in=filter['species'])
+            if filter['disease_stage']:
+                q_expression &= Q(disease_stage__in=filter['disease_stage'])
+            if filter['developmental_stage']:
+                q_expression &= Q(
+                    developmental_stage__in=filter['developmental_stage'])
+            if filter['sex']:
+                q_expression &= Q(sex__in=filter['sex'])
+            if filter['slice_id']:
+                q_expression &= Q(slice_id__in=filter['slice_id'])
+            if filter['publication_title']:
+                q_expression &= Q(publication_title__in=filter['publication_title'])
+            queryset = queryset.filter(q_expression)
 
         serializer = self.serializer_class(queryset, many=True)
         serialized_data = serializer.data
@@ -67,25 +94,7 @@ class detailView(APIView):
             slice_obj = slice.objects.get(id=id)
         serializer = sliceSerializer(slice_obj)
         return Response(serializer.data)
-
-# class datasetView(APIView):
-#     def get(self, request, *args, **kwargs):
-#         querydict = request.query_params.dict()
-#         print('----------- querydict', querydict)
-#         if 'doi' in querydict:
-#             doi = querydict['doi']
-#             # print('================= doi', doi)
-#             slices = crustdb_main.objects.filter(doi = doi).order_by('slice_id').distinct('slice_id')
-#             print('================ slices', slices)
-#         serializer = sliceSerializer(slices, many=True)
-#         print('--------------- serializer.data', serializer.data)
-#         slices = [i['slice_id'] for i in serializer.data]
-#         # print('-------------- slices', slices)
-#         # print('============== serializer.data', [i['publication_doi'] for i in serializer.data])
-#         return Response(slices)
-#         # print('============== serializer.data', serializer.data)
-#         # return Response(serializer.data)
-
+    
 
 class adataView(APIView):
     def get(self, request, *args, **kwargs):

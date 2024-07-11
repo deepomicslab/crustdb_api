@@ -49,5 +49,8 @@ class detailView(APIView):
         if 'id' in querydict:
             id = querydict['id']
             publication_obj = publication.objects.get(id = id)
+        elif 'title' in querydict:
+            title = querydict['title']
+            publication_obj = publication.objects.get(title = title)
         serializer = publicationSerializer(publication_obj)
         return Response(serializer.data)

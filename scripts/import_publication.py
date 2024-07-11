@@ -23,6 +23,7 @@ def add_data():
                 pages=d['pages'] if 'pages' in d.keys() else None,
                 year=d['year'] if 'year' in d.keys() else None,
                 abstract=d['abstract'] if 'abstract' in d.keys() else None,
+                link=d['link'] if 'link' in d.keys() else None,
                 publisher=d['publisher'] if 'publisher' in d.keys() else None,
             )
 

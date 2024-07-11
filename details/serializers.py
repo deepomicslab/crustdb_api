@@ -56,7 +56,7 @@ class detailsSerializer(serializers.ModelSerializer):
         if species_common == 'merfish_ileum':
             _data_uid = obj.repeat_data_uid.replace('MERFISH_MICE_ILEUM.csv', 'transcripts.gem.csv')
         elif species_common == 'Xenium_BreastCancer':
-            _data_uid = obj.repeat_data_uid.replace(obj.slice_id, 'transcripts.gem.csv.Cluster')
+            _data_uid = obj.repeat_data_uid.replace(slice_id, 'transcripts.gem.csv.Cluster')
         else:
             _data_uid = obj.repeat_data_uid
 

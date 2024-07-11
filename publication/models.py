@@ -11,6 +11,7 @@ class publication(models.Model):
     pages = models.CharField(max_length = 200, blank=True, null=True)
     year = models.IntegerField(blank=True, null=True)
     abstract = models.CharField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True)
     publisher = models.CharField(max_length = 200, blank=True, null=True)
 
     class Meta:

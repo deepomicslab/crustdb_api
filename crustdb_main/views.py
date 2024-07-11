@@ -43,8 +43,8 @@ def get_crustdb_main_with_annotated_field():
                 Value('_'), 
                 OuterRef('repeat_data_uid_list__0')
             ),
-            ).values('inferred_trans_center_num')
-        ).order_by('id')
+        ).values('inferred_trans_center_num')
+    ).order_by('id')
     return queryset
 
 class crustdbMainViewSet(APIView):
@@ -279,6 +279,11 @@ class crustdb_merfishViewSet(viewsets.ModelViewSet):
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
+class crustdb_xeniumViewSet(viewsets.ModelViewSet):
+    # queryset = crustdb_main.objects.filter(st_platform='Xenium').order_by('id')
+    queryset = get_crustdb_main_with_annotated_field().filter(st_platform='Xenium').order_by('id')
+    serializer_class = crustdbSerializer
+    pagination_class = LargeResultsSetPagination
 
 class crustdb_humanViewSet(viewsets.ModelViewSet):
     # queryset = crustdb_main.objects.filter(species='Homo sapiens (Human)').order_by('id')

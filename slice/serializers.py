@@ -7,30 +7,30 @@ try:
 except ImportError:
     local_settings = None
 
-color_map = {
-    'B-cell': '#ef9708',
-    'plasmablast': '#f0b98d',
-    'NK': '#0fcfc0',
-    'T CD4 naive': '#e07b91',
-    'T CD4 memory': '#d33f6a',
-    'T CD8 naive': '#bb7784',
-    'T CD8 memory': '#8e063b',
-    'Treg': '#e6afb9',
-    'endothelial': '#bec1d4',
-    'epithelial': '#b5bbe3',
-    'fibroblast': '#7d87b9',
-    'macrophage': '#9cded6',
-    'mast': '#11c638',
-    'monocyte': '#8dd593',
-    'neutrophil': '#c6dec7',
-    'pDC': '#ead3c6',
-    'mDC': '#d6bcc0',
-    'tumor 5': '#0000A6',
-    'tumor 6': '#1CE6FF',
-    'tumor 9': '#3B5DFF',
-    'tumor 12': '#023fa5',
-    'tumor 13': '#4a6fe3',
-}
+# color_map = {
+#     'B-cell': '#ef9708',
+#     'plasmablast': '#f0b98d',
+#     'NK': '#0fcfc0',
+#     'T CD4 naive': '#e07b91',
+#     'T CD4 memory': '#d33f6a',
+#     'T CD8 naive': '#bb7784',
+#     'T CD8 memory': '#8e063b',
+#     'Treg': '#e6afb9',
+#     'endothelial': '#bec1d4',
+#     'epithelial': '#b5bbe3',
+#     'fibroblast': '#7d87b9',
+#     'macrophage': '#9cded6',
+#     'mast': '#11c638',
+#     'monocyte': '#8dd593',
+#     'neutrophil': '#c6dec7',
+#     'pDC': '#ead3c6',
+#     'mDC': '#d6bcc0',
+#     'tumor 5': '#0000A6',
+#     'tumor 6': '#1CE6FF',
+#     'tumor 9': '#3B5DFF',
+#     'tumor 12': '#023fa5',
+#     'tumor 13': '#4a6fe3',
+# }
 
 adata_map = {
     # h5ad
@@ -170,7 +170,8 @@ class sliceSerializer(serializers.ModelSerializer):
     # n_cells = serializers.SerializerMethodField()
     # adata = serializers.SerializerMethodField()
     adata_path = serializers.SerializerMethodField()
-    species = serializers.SerializerMethodField()
+    publication_title = serializers.SerializerMethodField()
+    # species = serializers.SerializerMethodField()
 
     class Meta:
         model = slice
@@ -190,9 +191,15 @@ class sliceSerializer(serializers.ModelSerializer):
 
     def get_adata_path(self, obj):
         return adata_map[obj.slice_id]
+    
+    def get_publication_title(self, obj):
+        if hasattr(obj, 'publication_title'):
+            return obj.publication_title
+        else:
+            return None
 
-    def get_species(self, obj):
-        return crustdb_main.objects.filter(slice_id=obj.slice_id).first().species
+    # def get_species(self, obj):
+    #     return crustdb_main.objects.filter(slice_id=obj.slice_id).first().species
 
     # def get_adata(self, obj):
     #     file_type = adata_map[obj.slice_id].split('.')[-1]
