@@ -119,7 +119,7 @@ router.register('crustdb_xenium', crustdb_main.views.crustdb_xeniumViewSet)
 router.register('crustdb_human', crustdb_main.views.crustdb_humanViewSet)
 router.register('crustdb_mice', crustdb_main.views.crustdb_miceViewSet)
 router.register('crustdb_axolotls', crustdb_main.views.crustdb_axolotlsViewSet)
-# router.register('crustdb_monkey', crustdb_main.views.crustdb_monkeyViewSet)
+router.register('crustdb_monkey', crustdb_main.views.crustdb_monkeyViewSet)
 
 router.register('phage_Genbank', phage.views.phage_GenbankViewSet)
 router.register('phage_RefSeq', phage.views.phage_RefSeqViewSet)

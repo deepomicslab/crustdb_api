@@ -294,7 +294,7 @@ class crustdb_humanViewSet(viewsets.ModelViewSet):
 
 class crustdb_miceViewSet(viewsets.ModelViewSet):
     # queryset = crustdb_main.objects.filter(species='Mus musculus (Mouse)').order_by('id')
-    queryset = get_crustdb_main_with_annotated_field().filter(species='Mus musculus (Mouse)').order_by('id')
+    queryset = get_crustdb_main_with_annotated_field().filter(species='Mus musculus (Mice)').order_by('id')
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
@@ -305,10 +305,10 @@ class crustdb_axolotlsViewSet(viewsets.ModelViewSet):
     serializer_class = crustdbSerializer
     pagination_class = LargeResultsSetPagination
 
-# class crustdb_monkeyViewSet(viewsets.ModelViewSet):
-#     queryset = crustdb_main.objects.filter(species = 'Ambystoma mexicanum (Axolotl)')
-#     serializer_class = crustdbSerializer
-#     pagination_class = LargeResultsSetPagination
+class crustdb_monkeyViewSet(viewsets.ModelViewSet):
+    queryset = crustdb_main.objects.filter(species = '(Monkey)')
+    serializer_class = crustdbSerializer
+    pagination_class = LargeResultsSetPagination
 
 
 class crustdb_filterView(APIView):
