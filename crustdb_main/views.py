@@ -336,13 +336,19 @@ class crustdb_filterView(APIView):
         if filterdatajson['gene_num_min'] != '' and filterdatajson['gene_num_max'] != '':
             gene_num_min = filterdatajson['gene_num_min']
             gene_num_max = filterdatajson['gene_num_max']
-            q_expression &= Q(gene_num__lte=gene_num_max,
-                              gene_num__gte=gene_num_min)
+            q_expression &= Q(gene_num__lte=gene_num_max, gene_num__gte=gene_num_min)
         if filterdatajson['cell_num_min'] != '' and filterdatajson['cell_num_max'] != '':
             cell_num_min = filterdatajson['cell_num_min']
             cell_num_max = filterdatajson['cell_num_max']
-            q_expression &= Q(cell_num__lte=cell_num_max,
-                              cell_num__gte=cell_num_min)
+            q_expression &= Q(cell_num__lte=cell_num_max, cell_num__gte=cell_num_min)
+        if filterdatajson['conformation_num_min'] != '' and filterdatajson['conformation_num_max'] != '':
+            conformation_num_min = filterdatajson['conformation_num_min']
+            conformation_num_max = filterdatajson['conformation_num_max']
+            q_expression &= Q(conformation_num__lte=conformation_num_max, conformation_num__gte=conformation_num_min)
+        if filterdatajson['inferred_trans_center_num_min'] != '' and filterdatajson['inferred_trans_center_num_max'] != '':
+            inferred_trans_center_num_min = filterdatajson['inferred_trans_center_num_min']
+            inferred_trans_center_num_max = filterdatajson['inferred_trans_center_num_max']
+            q_expression &= Q(inferred_trans_center_num__lte=inferred_trans_center_num_max, inferred_trans_center_num__gte=inferred_trans_center_num_min)
         # total_queryset = crustdb_main.objects.filter(q_expression).order_by('id')
         total_queryset = get_crustdb_main_with_annotated_field().filter(q_expression).order_by('id')
         paginator = LargeResultsSetPagination()
