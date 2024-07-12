@@ -35,8 +35,9 @@ def log(log_str):
 # log(" [completed] scripts.import_celltype\n")
 
 # # ======= Remenber to maintain 07_check_topology_notexist.ipynb before adding topology/graph/general_node/graph_node ======= 
+# # ======= Remenber to maintain 08_networkx_graph_parentchild_relation.ipynb before adding topology/graph/general_node/graph_node ======= 
 # import_topology.add_data()
-# log(" [completed] scripts.import_topology, graph, general_node, graph_node\n")
+# log(" [completed] scripts.import_topology, graph, general_node\n")
 
 # import_craft_task.add_data()
 # log(" [completed] scripts.import_craft_task \n")

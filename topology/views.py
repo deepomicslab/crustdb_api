@@ -33,6 +33,7 @@ import os
 from datetime import datetime
 import numpy as np
 import pickle
+import math
 
 def get_species(species, slice_id):
     if species == 'Ambystoma mexicanum (Axolotl)':
@@ -68,12 +69,12 @@ class topologyView(APIView):
         crustdb_main_obj = crustdb_main.objects.get(uniq_data_uid = uid[:-5])
         species = get_species(crustdb_main_obj.species, crustdb_main_obj.slice_id)
         graph_obj = graph.objects.filter(topology_id = topology_id, type = type, pkl = pkl).first()
-
+        
         graphAttr = {
             'average_branching_factor': graph_obj.average_branching_factor,
             'modularity': graph_obj.modularity,
             'span': graph_obj.span,
-            'assortativity': graph_obj.assortativity,
+            'assortativity': 0 if np.isnan(graph_obj.assortativity) else 1e10 if math.isinf(graph_obj.assortativity) else graph_obj.assortativity,
             'degree_centrality': graph_obj.degree_centrality,
             'closeness_centrality': graph_obj.closeness_centrality,
             'betweenness_centrality': graph_obj.betweenness_centrality,
@@ -81,11 +82,18 @@ class topologyView(APIView):
 
         # graph node
         general_node_qs = general_node.objects.filter(topology_id = topology_id).order_by('node_name')
-        nodeInfoList = [[i.node_name, i.x, i.y, i.z] for i in general_node_qs]
+        nodeInfoList = np.array([[i.node_name, i.x, i.y, i.z] for i in general_node_qs])
+        nodeInfoList = nodeInfoList[nodeInfoList[:, 0].argsort()]
         home = local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
         df = pd.read_csv(home + '/node.csv', index_col=0).sort_index()
-        assert np.sum(np.array(df.index) != np.array(nodeInfoList)[:, 0]) == 0
+        assert np.sum(np.array(df.index) != nodeInfoList[:, 0]) == 0
         nodeInfoList = np.concatenate((nodeInfoList, df.to_numpy()),axis=1)
+        if graph_obj.type != 'MST':
+            component_df = pd.read_csv(home + '/components_length.csv').sort_values('Value')
+            assert np.sum(np.array(component_df['Value']) != nodeInfoList[:, 0]) == 0
+            nodeInfoList = np.concatenate((nodeInfoList, component_df['Length'].to_numpy().reshape(-1, 1)),axis=1)
+        else:
+            nodeInfoList = np.concatenate((nodeInfoList, np.zeros(len(nodeInfoList)).reshape(-1, 1)),axis=1)
         
         # edge
         edgeList = pd.read_csv(home + '/edge.csv', index_col=0).to_numpy()
@@ -95,14 +103,12 @@ class topologyView(APIView):
                 continue
             node_index_map[x] = idx
 
-        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score'])
+        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score', 'component_size'])
         edgeList = [[node_index_map[i[0]], node_index_map[i[1]]] for i in edgeList]
 
         # MST parent-child relation
-        # with open('/home/platform/project/crustdb_platform/crustdb_api/08_networkx_graph_mst_parentchild_relation.pkl', 'rb') as handle:
         with open(local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/MST/mst_parentchild_relation.pkl', 'rb') as handle:
             mst_parentchild_relation = pickle.load(handle)
-        
         return Response([nodeInfoList, edgeList, graphAttr, mst_parentchild_relation])
 
 class topology_nodeattrView(APIView):    
@@ -125,11 +131,18 @@ class topology_nodeattrView(APIView):
 
         # graph node
         general_node_qs = general_node.objects.filter(topology_id = topology_id).order_by('node_name')
-        nodeInfoList = [[i.node_name, i.x, i.y, i.z] for i in general_node_qs]
+        nodeInfoList = np.array([[i.node_name, i.x, i.y, i.z] for i in general_node_qs])
+        nodeInfoList = nodeInfoList[nodeInfoList[:, 0].argsort()]
         home = local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
         df = pd.read_csv(home + '/node.csv', index_col=0).sort_index()
-        assert np.sum(np.array(df.index) != np.array(nodeInfoList)[:, 0]) == 0
+        assert np.sum(np.array(df.index) != nodeInfoList[:, 0]) == 0
         nodeInfoList = np.concatenate((nodeInfoList, df.to_numpy()),axis=1)
+        if graph_obj.type != 'MST':
+            component_df = pd.read_csv(home + '/components_length.csv').sort_values('Value')
+            assert np.sum(np.array(component_df['Value']) != nodeInfoList[:, 0]) == 0
+            nodeInfoList = np.concatenate((nodeInfoList, component_df['Length'].to_numpy().reshape(-1, 1)),axis=1)
+        else:
+            nodeInfoList = np.concatenate((nodeInfoList, np.zeros(len(nodeInfoList)).reshape(-1, 1)),axis=1)
         
         # edge
         node_index_map = {}
@@ -138,7 +151,7 @@ class topology_nodeattrView(APIView):
                 continue
             node_index_map[x] = idx
 
-        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score'])
+        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score', 'component_size'])
         nodeInfoList = nodeInfoList.sort_values(by=['page_rank_score'], ascending=False)
         
         if 'sorter' in querydict and querydict['sorter'] != '':
