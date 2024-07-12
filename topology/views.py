@@ -5,7 +5,6 @@ from io import BytesIO
 from rest_framework import viewsets
 from rest_framework.views import APIView
 
-# from phage.models import phage
 from crustdb_main.models import crustdb_main
 from details.models import details
 from topology.models import topology
@@ -13,7 +12,6 @@ from general_node.models import general_node
 from graph.models import graph
 # from graph_node.models import graph_node
 
-# from phage.serializers import phageSerializer
 from crustdb_main.serializers import crustdbSerializer
 from details.serializers import detailsSerializer
 
@@ -28,13 +26,10 @@ from django.db.models import Q
 from Phage_api import settings_local as local_settings
 from django.http import FileResponse, HttpResponse
 from rest_framework.decorators import api_view
-# from phage_protein.serializers import phage_crispr_Serializer
-# from phage_protein.models import phage_crispr
 import pandas as pd
 import random
 import zipfile
 import os
-# from datasets.models import datasets
 from datetime import datetime
 import numpy as np
 import pickle
@@ -104,7 +99,8 @@ class topologyView(APIView):
         edgeList = [[node_index_map[i[0]], node_index_map[i[1]]] for i in edgeList]
 
         # MST parent-child relation
-        with open('/home/platform/project/crustdb_platform/crustdb_api/08_networkx_graph_mst_parentchild_relation.pkl', 'rb') as handle:
+        # with open('/home/platform/project/crustdb_platform/crustdb_api/08_networkx_graph_mst_parentchild_relation.pkl', 'rb') as handle:
+        with open(local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/MST/mst_parentchild_relation.pkl', 'rb') as handle:
             mst_parentchild_relation = pickle.load(handle)
         
         return Response([nodeInfoList, edgeList, graphAttr, mst_parentchild_relation])
@@ -113,11 +109,9 @@ class topology_nodeattrView(APIView):
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
 
-        # print('----------querydict', querydict)
         assert 'graph_selection_str' in querydict # topologyid_55-KNN_SNN-10.pkl
         
         graph_selection_str = querydict['graph_selection_str']
-        # print('nodeattr -----------', graph_selection_str, graph_selection_str.split('-'))
 
         type = graph_selection_str.split('-')[1]
         pkl = graph_selection_str.split('-')[2]
@@ -141,7 +135,6 @@ class topology_nodeattrView(APIView):
         node_index_map = {}
         for idx, x in enumerate(nodeInfoList[:, 0]):
             if x in list(node_index_map.keys()):
-                # print('topology view ------- repeat')
                 continue
             node_index_map[x] = idx
 
@@ -164,7 +157,6 @@ class topology_nodeattrView(APIView):
 class topology_graphlistView(APIView):
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
-        # print('--------------------- querydict', querydict)
 
         uid = ''
         # species = ''
