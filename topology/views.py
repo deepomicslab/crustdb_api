@@ -100,9 +100,9 @@ class topologyView(APIView):
         if graph_obj.type != 'MST':
             component_df = pd.read_csv(home + '/components_length.csv').sort_values('Value')
             assert np.sum(np.array(component_df['Value']) != nodeInfoList[:, 0]) == 0
-            nodeInfoList = np.concatenate((nodeInfoList, component_df['Length'].to_numpy().reshape(-1, 1)),axis=1)
+            nodeInfoList = np.concatenate((nodeInfoList, component_df[['Length', 'Index']].to_numpy()),axis=1)
         else:
-            nodeInfoList = np.concatenate((nodeInfoList, np.zeros(len(nodeInfoList)).reshape(-1, 1)),axis=1)
+            nodeInfoList = np.concatenate((nodeInfoList, np.zeros((len(nodeInfoList), 2))),axis=1)
         
         # edge
         edgeList = pd.read_csv(home + '/edge.csv', index_col=0).to_numpy()
@@ -112,7 +112,7 @@ class topologyView(APIView):
                 continue
             node_index_map[x] = idx
 
-        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score', 'component_size'])
+        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score', 'component_size', 'component_id'])
         edgeList = [[node_index_map[i[0]], node_index_map[i[1]]] for i in edgeList]
 
         # MST parent-child relation
@@ -151,9 +151,9 @@ class topology_nodeattrView(APIView):
         if graph_obj.type != 'MST':
             component_df = pd.read_csv(home + '/components_length.csv').sort_values('Value')
             assert np.sum(np.array(component_df['Value']) != nodeInfoList[:, 0]) == 0
-            nodeInfoList = np.concatenate((nodeInfoList, component_df['Length'].to_numpy().reshape(-1, 1)),axis=1)
+            nodeInfoList = np.concatenate((nodeInfoList, component_df[['Length', 'Index']].to_numpy()),axis=1)
         else:
-            nodeInfoList = np.concatenate((nodeInfoList, np.zeros(len(nodeInfoList)).reshape(-1, 1)),axis=1)
+            nodeInfoList = np.concatenate((nodeInfoList, np.zeros((len(nodeInfoList), 2))),axis=1)
         
         # edge
         node_index_map = {}
@@ -162,7 +162,7 @@ class topology_nodeattrView(APIView):
                 continue
             node_index_map[x] = idx
 
-        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score', 'component_size'])
+        nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score', 'component_size', 'component_id'])
         nodeInfoList = nodeInfoList.sort_values(by=['page_rank_score'], ascending=False)
         
         if 'sorter' in querydict and querydict['sorter'] != '':
