@@ -54,7 +54,14 @@ def get_species(species, slice_id):
             species_common = 'Mice'
     return species_common
 
-
+def process_digit(x):
+    if x == 0:
+        return 0
+    elif x < 0.0001:
+        return f"{x:.0e}"
+    else:
+        return round(x, 4)
+    
 class topologyView(APIView):    
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
@@ -71,13 +78,13 @@ class topologyView(APIView):
         graph_obj = graph.objects.filter(topology_id = topology_id, type = type, pkl = pkl).first()
         
         graphAttr = {
-            'average_branching_factor': graph_obj.average_branching_factor,
-            'modularity': graph_obj.modularity,
-            'span': graph_obj.span,
-            'assortativity': 0 if np.isnan(graph_obj.assortativity) else 1e10 if math.isinf(graph_obj.assortativity) else graph_obj.assortativity,
-            'degree_centrality': graph_obj.degree_centrality,
-            'closeness_centrality': graph_obj.closeness_centrality,
-            'betweenness_centrality': graph_obj.betweenness_centrality,
+            'average_branching_factor': process_digit(graph_obj.average_branching_factor),
+            'modularity': process_digit(graph_obj.modularity),
+            'span': process_digit(graph_obj.span),
+            'assortativity': 'NaN' if np.isnan(graph_obj.assortativity) else 'Inf' if math.isinf(graph_obj.assortativity) else process_digit(graph_obj.assortativity),
+            'degree_centrality': process_digit(graph_obj.degree_centrality),
+            'closeness_centrality': process_digit(graph_obj.closeness_centrality),
+            'betweenness_centrality': process_digit(graph_obj.betweenness_centrality),
         }
 
         # graph node
@@ -86,6 +93,8 @@ class topologyView(APIView):
         nodeInfoList = nodeInfoList[nodeInfoList[:, 0].argsort()]
         home = local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
         df = pd.read_csv(home + '/node.csv', index_col=0).sort_index()
+        df = df.apply(lambda x: x.apply(lambda y: process_digit(y)))    
+        df['degrees'] = df['degrees'].round()
         assert np.sum(np.array(df.index) != nodeInfoList[:, 0]) == 0
         nodeInfoList = np.concatenate((nodeInfoList, df.to_numpy()),axis=1)
         if graph_obj.type != 'MST':
@@ -135,6 +144,8 @@ class topology_nodeattrView(APIView):
         nodeInfoList = nodeInfoList[nodeInfoList[:, 0].argsort()]
         home = local_settings.CRUSTDB_DATABASE + 'topology/' + species + '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
         df = pd.read_csv(home + '/node.csv', index_col=0).sort_index()
+        df = df.apply(lambda x: x.apply(lambda y: process_digit(y)))
+        df['degrees'] = df['degrees'].round()
         assert np.sum(np.array(df.index) != nodeInfoList[:, 0]) == 0
         nodeInfoList = np.concatenate((nodeInfoList, df.to_numpy()),axis=1)
         if graph_obj.type != 'MST':
