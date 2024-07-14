@@ -102,7 +102,7 @@ class topologyView(APIView):
             assert np.sum(np.array(component_df['Value']) != nodeInfoList[:, 0]) == 0
             nodeInfoList = np.concatenate((nodeInfoList, component_df[['Length', 'Index']].to_numpy()),axis=1)
         else:
-            nodeInfoList = np.concatenate((nodeInfoList, np.zeros((len(nodeInfoList), 2))),axis=1)
+            nodeInfoList = np.concatenate((nodeInfoList, np.array(['N/A'] * (len(nodeInfoList)*2)).reshape(-1, 2)),axis=1)
         
         # edge
         edgeList = pd.read_csv(home + '/edge.csv', index_col=0).to_numpy()
@@ -153,7 +153,7 @@ class topology_nodeattrView(APIView):
             assert np.sum(np.array(component_df['Value']) != nodeInfoList[:, 0]) == 0
             nodeInfoList = np.concatenate((nodeInfoList, component_df[['Length', 'Index']].to_numpy()),axis=1)
         else:
-            nodeInfoList = np.concatenate((nodeInfoList, np.zeros((len(nodeInfoList), 2))),axis=1)
+            nodeInfoList = np.concatenate((nodeInfoList, np.array(['N/A'] * (len(nodeInfoList)*2)).reshape(-1, 2)),axis=1)
         
         # edge
         node_index_map = {}
