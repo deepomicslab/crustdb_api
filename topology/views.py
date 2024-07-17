@@ -154,13 +154,6 @@ class topology_nodeattrView(APIView):
             nodeInfoList = np.concatenate((nodeInfoList, component_df[['Length', 'Index']].to_numpy()),axis=1)
         else:
             nodeInfoList = np.concatenate((nodeInfoList, np.array(['N/A'] * (len(nodeInfoList)*2)).reshape(-1, 2)),axis=1)
-        
-        # edge
-        node_index_map = {}
-        for idx, x in enumerate(nodeInfoList[:, 0]):
-            if x in list(node_index_map.keys()):
-                continue
-            node_index_map[x] = idx
 
         nodeInfoList = pd.DataFrame(nodeInfoList, columns=['node_name', 'x', 'y', 'z', 'degrees', 'degree_centrality', 'betweenness', 'closeness_centrality', 'page_rank_score', 'component_size', 'component_id'])
         nodeInfoList = nodeInfoList.sort_values(by=['page_rank_score'], ascending=False)

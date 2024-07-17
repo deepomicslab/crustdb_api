@@ -49,7 +49,11 @@ def task_status_updata():
         if status == 'FAILED':
             task_obj.status = 'Failed'
         elif status == 'COMPLETED':
-            if task.check_task_result(task_obj.output_result_path):
+            if task_obj.analysis_type in ['Single Celltype Mode', 'Multi-Celltype Mode'] \
+                and task.check_task_result(task_obj.output_result_path):
+                task_obj.status = 'Success'
+            elif task_obj.analysis_type in ['Topology Construction'] \
+                and task.check_topo_task_result(task_obj.output_result_path):
                 task_obj.status = 'Success'
             else:
                 task_obj.status = 'Failed'

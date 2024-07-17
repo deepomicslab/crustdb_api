@@ -37,7 +37,6 @@ def get_job_output(output_log_path):
     except:
         return 'no sbatch log'
 
-
 def get_job_error(output_log_path):
     path = output_log_path + 'sbatch.err'
     try:

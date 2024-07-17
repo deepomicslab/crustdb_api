@@ -179,6 +179,10 @@ urlpatterns = [
      path('details/topology_graphlist', topology.views.topology_graphlistView.as_view()),
      path('details/topology_nodeattr', topology.views.topology_nodeattrView.as_view()),
 
+     path('tasks/vis/topology/', craft_task.views.view_vis_topology.as_view()),
+     path('tasks/vis/topology_graphlist/', craft_task.views.view_vis_topology_graphlist.as_view()),
+     path('tasks/vis/topology_nodeattr/', craft_task.views.view_vis_topology_nodeattr.as_view()),
+
      path('phage/cluster', phage.views.phage_clusterView.as_view()),
      path('phage/subcluster', phage.views.phage_subclusterView.as_view()),
      path('crustdb_main/filter/', crustdb_main.views.crustdb_filterView.as_view()),
@@ -227,6 +231,7 @@ urlpatterns = [
      path('analyze/pipline/', task.views.piplineView.as_view()),
      path('analyze/craft_single_celltype/', craft_task.views.craft_single_celltype_View.as_view()),
      path('analyze/craft_multi_celltype/', craft_task.views.craft_multi_celltype_View.as_view()),
+     path('analyze/craft_topology/', craft_task.views.craft_topology_View.as_view()),
      path('analyze/clusterpipline/', task.views.clusterpiplineView.as_view()),
      path('analyze/inputcheck/', analysis.views.inputcheck.as_view()),
 
