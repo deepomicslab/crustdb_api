@@ -19,9 +19,11 @@ import glob
 
 ##### run analysis script#####
 
+
 def cancel_task(job_id):
     cancel_success = slurm_api.cancel_job(job_id)
     return cancel_success
+
 
 def run_single_celltype_mode(info_dict):
     user_input_path = info_dict['user_input_path']
@@ -31,25 +33,28 @@ def run_single_celltype_mode(info_dict):
     analysis_type = info_dict['analysis_type']
     fileseparator = info_dict['fileseparator']
     sbatch_command = (
-        'sbatch' + \
-        ' --output=' + output_log_path + 'sbatch.out' + \
-        ' --error=' + output_log_path + 'sbatch.err' + \
-        ' ' +local_settings.SCRIPTS + 'CRUST_Mice_endo.sh' + \
-        ' -a ' + user_input_path['csv'] + \
-        ' -c ' + output_result_path + \
-        ' -d ' + species + \
-        ' -e ' + output_log_path + 'craft.log' + \
+        'sbatch' +
+        ' --output=' + output_log_path + 'sbatch.out' +
+        ' --error=' + output_log_path + 'sbatch.err' +
+        ' ' + local_settings.SCRIPTS + 'CRUST_Mice_endo.sh' +
+        ' -a ' + user_input_path['csv'] +
+        ' -c ' + output_result_path +
+        ' -d ' + species +
+        ' -e ' + output_log_path + 'craft.log' +
         ' -f ' + fileseparator
-    ) 
+    )
     print('sbatch_command', sbatch_command)
-    sbatch_output = subprocess.check_output(sbatch_command, shell = True).decode("utf-8") # Submitted batch job 1410435
-    job_id = re.search(r"Submitted batch job (\d+)", sbatch_output).group(1) # 1410435
-    status = slurm_api.get_job_status(job_id) # PENDING
+    sbatch_output = subprocess.check_output(sbatch_command, shell=True).decode(
+        "utf-8")  # Submitted batch job 1410435
+    job_id = re.search(r"Submitted batch job (\d+)",
+                       sbatch_output).group(1)  # 1410435
+    status = slurm_api.get_job_status(job_id)  # PENDING
     taskdetail_dict = {
         'job_id': job_id,
         'status': status,
     }
     return taskdetail_dict
+
 
 def run_multi_celltype_mode(info_dict):
     user_input_path = info_dict['user_input_path']
@@ -59,30 +64,33 @@ def run_multi_celltype_mode(info_dict):
     analysis_type = info_dict['analysis_type']
     # fileseparator = info_dict['fileseparator'] # sep
     sbatch_command = (
-        'sbatch' + \
-        ' --output=' + output_log_path + 'sbatch.out' + \
-        ' --error=' + output_log_path + 'sbatch.err' + \
-        ' ' +local_settings.SCRIPTS + 'CRUST_merfish_ileum.sh' + \
-        ' -a ' + user_input_path['csv'] + \
-        ' -b ' + user_input_path['feature'] + \
-        ' -c ' + output_result_path + \
-        ' -d ' + species + \
-        ' -e ' + output_log_path + 'craft.log' + \
-        ' -f ' + info_dict['sep'] + \
-        ' -g ' + info_dict['ctkey'] + \
-        ' -h ' + info_dict['csep'] + \
-        ' -i ' + info_dict['cikey'] + \
+        'sbatch' +
+        ' --output=' + output_log_path + 'sbatch.out' +
+        ' --error=' + output_log_path + 'sbatch.err' +
+        ' ' + local_settings.SCRIPTS + 'CRUST_merfish_ileum.sh' +
+        ' -a ' + user_input_path['csv'] +
+        ' -b ' + user_input_path['feature'] +
+        ' -c ' + output_result_path +
+        ' -d ' + species +
+        ' -e ' + output_log_path + 'craft.log' +
+        ' -f ' + info_dict['sep'] +
+        ' -g ' + info_dict['ctkey'] +
+        ' -h ' + info_dict['csep'] +
+        ' -i ' + info_dict['cikey'] +
         ' -j ' + info_dict['number']
-    ) 
+    )
     print('sbatch_command', sbatch_command)
-    sbatch_output = subprocess.check_output(sbatch_command, shell = True).decode("utf-8") # Submitted batch job 1410435
-    job_id = re.search(r"Submitted batch job (\d+)", sbatch_output).group(1) # 1410435
-    status = slurm_api.get_job_status(job_id) # PENDING
+    sbatch_output = subprocess.check_output(sbatch_command, shell=True).decode(
+        "utf-8")  # Submitted batch job 1410435
+    job_id = re.search(r"Submitted batch job (\d+)",
+                       sbatch_output).group(1)  # 1410435
+    status = slurm_api.get_job_status(job_id)  # PENDING
     taskdetail_dict = {
         'job_id': job_id,
         'status': status,
     }
     return taskdetail_dict
+
 
 def run_topology_construction(info_dict):
     user_input_path = info_dict['user_input_path']
@@ -91,19 +99,21 @@ def run_topology_construction(info_dict):
     species = info_dict['species']
     analysis_type = info_dict['analysis_type']
     sbatch_command = (
-        'sbatch' + \
-        ' --output=' + output_log_path + 'sbatch.out' + \
-        ' --error=' + output_log_path + 'sbatch.err' + \
-        ' ' + local_settings.SCRIPTS + 'topology_run.sh' + \
-        ' -a ' + user_input_path['gene_coord'] + \
-        ' -b ' + species + \
-        ' -c ' + output_result_path + \
+        'sbatch' +
+        ' --output=' + output_log_path + 'sbatch.out' +
+        ' --error=' + output_log_path + 'sbatch.err' +
+        ' ' + local_settings.SCRIPTS + 'topology_run.sh' +
+        ' -a ' + user_input_path['gene_coord'] +
+        ' -b ' + species +
+        ' -c ' + output_result_path +
         ' -d ' + output_log_path + 'topo.log'
-    ) 
+    )
     print('sbatch_command', sbatch_command)
-    sbatch_output = subprocess.check_output(sbatch_command, shell = True).decode("utf-8") # Submitted batch job 1410435
-    job_id = re.search(r"Submitted batch job (\d+)", sbatch_output).group(1) # 1410435
-    status = slurm_api.get_job_status(job_id) # PENDING
+    sbatch_output = subprocess.check_output(sbatch_command, shell=True).decode(
+        "utf-8")  # Submitted batch job 1410435
+    job_id = re.search(r"Submitted batch job (\d+)",
+                       sbatch_output).group(1)  # 1410435
+    status = slurm_api.get_job_status(job_id)  # PENDING
     taskdetail_dict = {
         'job_id': job_id,
         'status': status,
@@ -113,38 +123,44 @@ def run_topology_construction(info_dict):
 # def run_analysis(info_dict):
 #     if info_dict['analysis_type'] == 'Single Celltype Mode':
 #         taskdetail_dict = run_single_celltype_mode(info_dict)
-#     else: 
+#     else:
 #         pass
 #     return taskdetail_dict
+
 
 def get_job_output(output_log_path):
     path = output_log_path + 'craft.log'
     try:
         with open(path, 'r') as f:
             output = f.read()
-            if output == '': output = 'no craft log'
+            if output == '':
+                output = 'no craft log'
             return output
     except:
         return 'no craft log'
-    
+
+
 def get_topo_job_output(output_log_path):
     path = output_log_path + 'topo.log'
     try:
         with open(path, 'r') as f:
             output = f.read()
-            if output == '': output = 'no topology log'
+            if output == '':
+                output = 'no topology log'
             return output
     except:
         return 'no topology log'
+
 
 def re_match(start, end, str):
     _, res = re.findall(r"("+start+r")\s*(.*?)\s*(?!\1)(?:"+end+r")", str)[0]
     return res
 
+
 def get_job_result(task_status, output_result_path):
     res = {}
     for _ in glob.glob(output_result_path + '/*'):
-        name = _.strip().split('/')[-1]    
+        name = _.strip().split('/')[-1]
         with open(output_result_path + name + '/' + name + '.log') as f:
             L = f.readlines()
         log_lines = ''
@@ -157,48 +173,15 @@ def get_job_result(task_status, output_result_path):
             for i in range(0, len(L) - 1):
                 if L[i].find("RMSD") == -1:
                     continue
-                distance_list.append(L[i].strip().split(' ')[-1])  
+                distance_list.append(L[i].strip().split(' ')[-1])
             tmp_dict = {
                 # 'species': re_match('Species: ', '\n', log_lines),
                 'sample_name': re_match('Sample Name: ', '\n', log_lines),
                 'seed': int(re_match('Seed: ', '\n', log_lines)),
                 'gene_filter_threshold': float(re_match('Threshold for gene filter is: ', '\n', log_lines)),
                 'anchor_gene_proportion': float(re_match('genes used for Rotation Derivation is: ', '\n', log_lines)),
-                'task_id': re_match('Task ID: ', '\n', log_lines), # craft task id, i.e., the random 4-char string
-                'inferred_trans_center_num': int(re_match('Number of total Transcription centers is: ', '\n', log_lines)),
-                'distance_list': distance_list,
-            }
-        elif task_status == 'Failed':
-            tmp_dict = {
-                'log_lines': log_lines
-            }
-        res[name] = tmp_dict
-    return res
-
-def get_topo_job_result(task_status, output_result_path):
-    res = {}
-    for _ in glob.glob(output_result_path + '/*'):
-        name = _.strip().split('/')[-1]    
-        with open(output_result_path + name + '/' + name + '.log') as f:
-            L = f.readlines()
-        log_lines = ''
-        for i in L:
-            log_lines += i
-
-        assert task_status in ['Success', 'Failed']
-        if task_status == 'Success':
-            distance_list = []
-            for i in range(0, len(L) - 1):
-                if L[i].find("RMSD") == -1:
-                    continue
-                distance_list.append(L[i].strip().split(' ')[-1])  
-            tmp_dict = {
-                # 'species': re_match('Species: ', '\n', log_lines),
-                'sample_name': re_match('Sample Name: ', '\n', log_lines),
-                'seed': int(re_match('Seed: ', '\n', log_lines)),
-                'gene_filter_threshold': float(re_match('Threshold for gene filter is: ', '\n', log_lines)),
-                'anchor_gene_proportion': float(re_match('genes used for Rotation Derivation is: ', '\n', log_lines)),
-                'task_id': re_match('Task ID: ', '\n', log_lines), # craft task id, i.e., the random 4-char string
+                # craft task id, i.e., the random 4-char string
+                'task_id': re_match('Task ID: ', '\n', log_lines),
                 'inferred_trans_center_num': int(re_match('Number of total Transcription centers is: ', '\n', log_lines)),
                 'distance_list': distance_list,
             }
@@ -217,7 +200,7 @@ def check_task_result(output_result_path):
         print('Conformation reconstruction failed 1')
         return False
     for _ in file_list:
-        name = _.strip().split('/')[-1]    
+        name = _.strip().split('/')[-1]
         with open(output_result_path + name + '/' + name + '.log') as f:
             L = f.readlines()
         line_str = ''
@@ -232,6 +215,7 @@ def check_task_result(output_result_path):
             return False
     return True
 
+
 def check_topo_task_result(output_result_path):
     file_list = glob.glob(output_result_path + '/*')
     if len(file_list) != 8:
@@ -239,7 +223,8 @@ def check_topo_task_result(output_result_path):
         print('Topology Construction failed 1')
         return False
     return True
-    
+
+
 def init_taskdetail_dict(info_dict):
     new_dict = {}
     new_dict["taskid"] = info_dict["taskid"]
@@ -262,7 +247,7 @@ def init_taskdetail_dict(info_dict):
     if 'anticrispr' in module_list and 'annotation' not in module_list:
         new_dict["log"] = "Anti-CRISPR Protein Annotation must need ORF prediction & Protein classification"
         new_dict["status"] = "error"
-    
+
     # annotation must be the first module
     if 'annotation' in module_list:
         task_dict = {'module': 'annotation',
@@ -278,6 +263,8 @@ def init_taskdetail_dict(info_dict):
     return new_dict
 
 # first run task and update task status
+
+
 def update_task_que(taskdetail_dict, module, status, job_id):
     for task in taskdetail_dict["task_que"]:
         if task["module"] == module:
@@ -293,7 +280,7 @@ def run_annotation(taskdetail_dict):
     outputpath = userpath + "/output/rawdata/annotation"
     shell_script = local_settings.ANALYSIS + "annotation_v2/run.sh"
     script_arguments = [inputpath, outputpath]
-    #shell_script = "/home/platform/phage_db/phage_api/workspace/analysis_script/annotation/run.sh"
+    # shell_script = "/home/platform/phage_db/phage_api/workspace/analysis_script/annotation/run.sh"
     job_id = slurm_api.submit_job(
         shell_script, script_arguments=script_arguments)
     status = slurm_api.get_job_status(job_id)
@@ -395,6 +382,7 @@ def run_arvf(taskdetail_dict):
         taskdetail_dict["task_status"] = "error"
     return taskdetail_dict
 
+
 def run_trna(taskdetail_dict):
     userpath = taskdetail_dict["userpath"]
     inputpath = userpath + "/upload/sequence.fasta"
@@ -410,7 +398,6 @@ def run_trna(taskdetail_dict):
     return taskdetail_dict
 
 
-
 # /home/platform/phage_db/phage_api/workspace/analysis_script/sequencecomparison/run.sh
 # /home/platform/phage_db/phage_api/workspace/analysis_script/sequencecomparison/test/gene.faa
 # None
@@ -423,7 +410,7 @@ def run_alignment(taskdetail_dict):
     inputgffpath = userpath + "/output/rawdata/annotation/sequence.gff3"
     outputpathdir = userpath + "/output/rawdata/alignment"
     shell_script = local_settings.ANALYSIS + "alignment/run.sh"
-    script_arguments = [inputfaapath, 'None',inputgffpath, outputpathdir, '1']
+    script_arguments = [inputfaapath, 'None', inputgffpath, outputpathdir, '1']
     annotation_job_id = -1
     for task in taskdetail_dict["task_que"]:
         if task["module"] == 'annotation':
@@ -470,7 +457,6 @@ def run_terminator(taskdetail_dict):
     return taskdetail_dict
 
 
-
 def run_anticrispr(taskdetail_dict):
     userpath = taskdetail_dict["userpath"]
 
@@ -483,7 +469,7 @@ def run_anticrispr(taskdetail_dict):
     # status = slurm_api.get_job_status(job_id)
     # taskdetail_dict = update_task_que(
     #     taskdetail_dict, "anticrispr", status, job_id)
-    
+
     annotation_job_id = -1
     for task in taskdetail_dict["task_que"]:
         if task["module"] == 'annotation':
@@ -498,6 +484,7 @@ def run_anticrispr(taskdetail_dict):
     else:
         taskdetail_dict["task_status"] = "error"
     return taskdetail_dict
+
 
 def run_crispr(taskdetail_dict):
     userpath = taskdetail_dict["userpath"]
@@ -520,7 +507,7 @@ def run_taxonomic(taskdetail_dict):
     inputgffpath = userpath + "/output/rawdata/annotation/sequence.gff3"
     outputpathdir = userpath + "/output/rawdata/taxonomic"
     shell_script = local_settings.ANALYSIS + "taxonomic/run.sh"
-    script_arguments = [inputfaapath,inputgffpath, outputpathdir]
+    script_arguments = [inputfaapath, inputgffpath, outputpathdir]
     annotation_job_id = -1
     for task in taskdetail_dict["task_que"]:
         if task["module"] == 'annotation':
@@ -567,23 +554,16 @@ def run_annotation_pipline(taskdetail_dict):
     return taskdetail_dict
 
 
-
-
-
-
-
-
-
-
 def run_cluster(taskdetail_dict):
     userpath = taskdetail_dict["userpath"]
     inputpath = userpath + "/upload/sequence.fasta"
     outputpath = userpath + "/output/rawdata/cluster"
-    outputpath_tree= userpath + "/output/rawdata/tree"
-    outputpath_annotation= userpath + "/output/rawdata/annotation"
-    outputpath_alignment= userpath + "/output/rawdata/alignment"
-    script_arguments = [inputpath, outputpath,outputpath_tree,outputpath_annotation,outputpath_alignment]
-    
+    outputpath_tree = userpath + "/output/rawdata/tree"
+    outputpath_annotation = userpath + "/output/rawdata/annotation"
+    outputpath_alignment = userpath + "/output/rawdata/alignment"
+    script_arguments = [inputpath, outputpath, outputpath_tree,
+                        outputpath_annotation, outputpath_alignment]
+
     shell_script = "/home/platform/phage_db/phage_api/workspace/analysis_script/clustering/run.sh"
 
     annotation_job_id = -1
@@ -602,12 +582,11 @@ def run_cluster(taskdetail_dict):
     return taskdetail_dict
 
 
-
 def run_tree(taskdetail_dict):
     userpath = taskdetail_dict["userpath"]
     inputpath = userpath + "/upload/sequence.fasta"
-    outputpath_tree= userpath + "/output/rawdata/tree"
-    script_arguments = [inputpath,outputpath_tree]
+    outputpath_tree = userpath + "/output/rawdata/tree"
+    script_arguments = [inputpath, outputpath_tree]
 
     shell_script = "/home/platform/phage_db/phage_api/workspace/analysis_script/phylogenetictree/run.sh"
     job_id = slurm_api.submit_job(
@@ -626,15 +605,16 @@ def run_comparedatabse(taskdetail_dict):
     #4 tree output directory
     '''
 
-    #cluster
+    # cluster
     userpath = taskdetail_dict["userpath"]
     inputpath = userpath + "/upload/sequence.fasta"
-    outputpath_compare= userpath + "/output/rawdata/comparedatabse"
-    outputpath_tree= userpath + "/output/rawdata/tree"
-    #databasejson= userpath + "/upload/database.json"
-    databsefile='/home/platform/phage_db/phage_api/workspace/analysis_script/comparedatabse/group_rep.fasta'
+    outputpath_compare = userpath + "/output/rawdata/comparedatabse"
+    outputpath_tree = userpath + "/output/rawdata/tree"
+    # databasejson= userpath + "/upload/database.json"
+    databsefile = '/home/platform/phage_db/phage_api/workspace/analysis_script/comparedatabse/group_rep.fasta'
 
-    script_arguments = [inputpath,outputpath_compare,databsefile,outputpath_tree]
+    script_arguments = [inputpath, outputpath_compare,
+                        databsefile, outputpath_tree]
 
     shell_script = "/home/platform/phage_db/phage_api/workspace/analysis_script/comparedatabse/run.sh"
     job_id = slurm_api.submit_job(
@@ -654,9 +634,10 @@ def run_comparedatabse(taskdetail_dict):
     status = slurm_api.get_job_status(job_id)
     taskdetail_dict = update_task_que(
         taskdetail_dict, "annotation", status, job_id)
-    taskdetail_dict=run_alignment(taskdetail_dict)
+    taskdetail_dict = run_alignment(taskdetail_dict)
 
     return taskdetail_dict
+
 
 def run_cluster_pipline(taskdetail_dict):
     module_list = taskdetail_dict["modulelist"]
@@ -673,5 +654,3 @@ def run_cluster_pipline(taskdetail_dict):
             elif module == "alignment":
                 taskdetail_dict = run_alignment(taskdetail_dict)
     return taskdetail_dict
-
-

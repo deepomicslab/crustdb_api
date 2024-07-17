@@ -395,28 +395,18 @@ def viewtasklog(request):
 def viewtaskresultlog(request):
     taskid = request.query_params.dict()['taskid']
     task_obj = craft_task.objects.get(id=taskid)
-    if task_obj.analysis_type in ['Single Celltype Mode', 'Multi-Celltype Mode']:
-        craft_result_log = task.get_job_result(
-            'Failed', task_obj.output_result_path)
-        craft_result_keys = craft_result_log.keys()
-        if len(craft_result_log) == 0:
-            craft_result_keys = ['craft_result_key']
-            craft_result_log = {
-                'craft_result_key': {
-                    'log_lines': 'The task is failed. \nNo result file is created. \nPlease check Task Log for details.'
-                }
+    assert task_obj.analysis_type in [
+        'Single Celltype Mode', 'Multi-Celltype Mode']
+    craft_result_log = task.get_job_result(
+        'Failed', task_obj.output_result_path)
+    craft_result_keys = craft_result_log.keys()
+    if len(craft_result_log) == 0:
+        craft_result_keys = ['craft_result_key']
+        craft_result_log = {
+            'craft_result_key': {
+                'log_lines': 'The task is failed. \nNo result file is created. \nPlease check Task Log for details.'
             }
-    else:  # ['Topology Construction]
-        craft_result_log = task.get_topo_job_result(
-            'Failed', task_obj.output_result_path)
-        craft_result_keys = craft_result_log.keys()
-        if len(craft_result_log) == 0:
-            craft_result_keys = ['craft_result_key']
-            craft_result_log = {
-                'craft_result_key': {
-                    'log_lines': 'The task is failed. \nNo result file is created. \nPlease check Task Log for details.'
-                }
-            }
+        }
     return Response([craft_result_keys, craft_result_log])
 
 
@@ -424,14 +414,11 @@ def viewtaskresultlog(request):
 def viewtaskresult(request):
     taskid = request.query_params.dict()['taskid']
     task_obj = craft_task.objects.get(id=taskid)
-    if task_obj.analysis_type in ['Single Celltype Mode', 'Multi-Celltype Mode']:
-        craft_result = task.get_job_result(
-            'Success', task_obj.output_result_path)
-        craft_result_keys = craft_result.keys()
-    else:  # ['Topology Construction]
-        craft_result = task.get_topo_job_result(
-            'Success', task_obj.output_result_path)
-        craft_result_keys = craft_result.keys()
+    assert task_obj.analysis_type in [
+        'Single Celltype Mode', 'Multi-Celltype Mode']
+    craft_result = task.get_job_result(
+        'Success', task_obj.output_result_path)
+    craft_result_keys = craft_result.keys()
     return Response([craft_result_keys, craft_result])
 
 
