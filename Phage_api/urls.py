@@ -178,6 +178,7 @@ urlpatterns = [
      path('details/topology', topology.views.topologyView.as_view()),
      path('details/topology_graphlist', topology.views.topology_graphlistView.as_view()),
      path('details/topology_nodeattr', topology.views.topology_nodeattrView.as_view()),
+     path('details/topology_go', topology.views.topology_goView.as_view()),
 
      path('tasks/vis/topology/', craft_task.views.view_vis_topology.as_view()),
      path('tasks/vis/topology_graphlist/', craft_task.views.view_vis_topology_graphlist.as_view()),

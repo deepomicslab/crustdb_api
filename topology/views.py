@@ -261,3 +261,24 @@ class topology_graphlistView(APIView):
             graph_types.append(process_graph_type(i.type, i.pkl))
 
         return Response(graph_types)
+    
+class topology_goView(APIView):
+    def get(self, request, *args, **kwargs):
+        querydict = request.query_params.dict()
+        graph_selection_str = querydict['graph_selection_str']
+        type, graph_folder = process_graph_type_reverse(graph_selection_str)
+        topology_id = querydict['topoid']
+        topology_obj = topology.objects.get(id=topology_id)
+        uid = topology_obj.repeat_data_uid
+        crustdb_main_obj = crustdb_main.objects.get(uniq_data_uid=uid[:-5])
+        species = get_species(crustdb_main_obj.species,
+                              crustdb_main_obj.slice_id)
+        graph_obj = graph.objects.filter(
+            topology_id=topology_id, type=type, graph_folder=graph_folder).first()
+        
+        home = local_settings.CRUSTDB_DATABASE + 'topology/' + species + \
+            '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
+        Go_result = pd.read_csv(home + 'Go_result.csv', index_col=0)
+        Go_result['p_inv'] = Go_result['p_inv'].round(4)
+        Go_result['Hits_ratio'] = Go_result['Hits_ratio'].round(4)
+        return Response(Go_result)
