@@ -183,6 +183,7 @@ urlpatterns = [
      path('tasks/vis/topology/', craft_task.views.view_vis_topology.as_view()),
      path('tasks/vis/topology_graphlist/', craft_task.views.view_vis_topology_graphlist.as_view()),
      path('tasks/vis/topology_nodeattr/', craft_task.views.view_vis_topology_nodeattr.as_view()),
+     path('tasks/vis/topology_go', craft_task.views.view_vis_topology_goView.as_view()),
 
      path('phage/cluster', phage.views.phage_clusterView.as_view()),
      path('phage/subcluster', phage.views.phage_subclusterView.as_view()),

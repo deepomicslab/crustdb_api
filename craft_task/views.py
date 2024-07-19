@@ -707,3 +707,83 @@ class view_vis_topology_nodeattr(APIView):
                     by=[columnKey], ascending=False)
 
         return Response([nodeInfoList])
+
+class view_vis_topology_goView(APIView):
+    def run_go_analysis(self, go_df, DotPlot):
+        result_new = go_df
+        if result_new.shape[0] > 200:
+            figsize=False
+            size = False
+            top_term=3
+        else:
+            figsize = (5,10)
+            size = 50
+            top_term = 5
+            
+        x_key = 'Gene_set'
+        if not figsize:
+            figsize = (int(len(result_new[x_key].unique())/3), int(top_term*len(result_new[x_key].unique())/10))
+        if not size:
+            size = int(top_term*len(result_new[x_key].unique())/15)
+
+        result_new.loc[:,'Term'] = result_new.loc[:,'Term'].str.split('(', expand=True)[0]
+
+        cutoff = 0.01
+        while int(len(result_new[result_new.loc[:,'Adjusted P-value'] <= cutoff][x_key].unique())) < 3:
+            cutoff = cutoff + 0.01
+
+        dot = DotPlot.DotPlot(
+            df=result_new,
+            x='Gene_set',
+            y='Term',
+            x_order=False,
+            y_order=False,
+            hue="Adjusted P-value",
+            title="title",
+            thresh=cutoff,
+            n_terms=int(top_term),
+            dot_scale=size,
+            figsize=figsize,
+            cmap="viridis_r",
+            ofname=None,
+            marker='o',
+        )
+        go_info = dot.data[['Gene_set', 'Term', 'p_inv', 'Hits_ratio']]
+        return go_info
+    
+    def load_gseapy(self):
+        import importlib.util
+        gseapy=importlib.util.spec_from_file_location("gseapy",local_settings.SCRIPTS+"cytotopo_reference_package/gseapy/plot.py")
+        DotPlot = importlib.util.module_from_spec(gseapy)
+        gseapy.loader.exec_module(DotPlot)
+        return DotPlot
+
+    def get(self, request, *args, **kwargs):
+        querydict = request.query_params.dict()
+        taskid = querydict['taskid']  # 114
+        # 1NN, KNN (k = 5), ...
+        graph_selection_str = querydict['graph_selection_str']
+        task_obj = craft_task.objects.get(id=taskid)
+        home = task_obj.output_result_path + process_path(graph_selection_str)
+        go_df = pd.read_csv(home + '/Go.csv', index_col=0)
+
+        # run go
+        print('----------------------------', home + '/Go_result.csv')
+        import os.path
+        if (os.path.isfile(home + '/Go_result.csv')):
+            Go_result = pd.read_csv(home + '/Go_result.csv', index_col=0)
+        else:
+            DotPlot = self.load_gseapy()
+            go_info = self.run_go_analysis(go_df, DotPlot)
+            go_info.to_csv(home + '/Go_result.csv')
+            Go_result = go_info
+        
+        # # DotPlot = self.load_gseapy()
+        # # go_info = self.run_go_analysis(go_df, DotPlot)
+        # # go_info.to_csv(home + '/Go_result.csv')
+        # # Go_result = go_info
+        
+        Go_result['p_inv'] = Go_result['p_inv'].round(4)
+        Go_result['Hits_ratio'] = Go_result['Hits_ratio'].round(4)
+
+        return Response(Go_result)
