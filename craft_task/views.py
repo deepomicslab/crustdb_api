@@ -766,13 +766,6 @@ class view_vis_topology_goView(APIView):
         task_obj = craft_task.objects.get(id=taskid)
         home = task_obj.output_result_path + process_path(graph_selection_str)
         go_df = pd.read_csv(home + '/Go.csv', index_col=0).sort_values('P-value')
-        go_df.columns = ['Gene_set','Term','Overlap','P_value','Adjusted_P_value','Old_P_value','Old_Adjusted_P_value','Odds_Ratio','Combined_Score','Genes']
-        go_df['P_value'] = go_df['P_value'].round(4)
-        go_df['Adjusted_P_value'] = go_df['Adjusted_P_value'].round(4)
-        go_df['Old_P_value'] = go_df['Old_P_value'].round(4)
-        go_df['Old_Adjusted_P_value'] = go_df['Old_Adjusted_P_value'].round(4)
-        go_df['Odds_Ratio'] = go_df['Odds_Ratio'].round(4)
-        go_df['Combined_Score'] = go_df['Combined_Score'].round(4)
 
         # run go
         # print('----------------------------', home + '/Go_result.csv')
@@ -785,12 +778,15 @@ class view_vis_topology_goView(APIView):
         #     go_info.to_csv(home + '/Go_result.csv')
         #     Go_result = go_info
         
-        # # DotPlot = self.load_gseapy()
-        # # go_info = self.run_go_analysis(go_df, DotPlot)
-        # # go_info.to_csv(home + '/Go_result.csv')
-        # # Go_result = go_info
-        
         Go_result['p_inv'] = Go_result['p_inv'].round(4)
         Go_result['Hits_ratio'] = Go_result['Hits_ratio'].round(4)
+
+        go_df.columns = ['Gene_set','Term','Overlap','P_value','Adjusted_P_value','Old_P_value','Old_Adjusted_P_value','Odds_Ratio','Combined_Score','Genes']
+        go_df['P_value'] = go_df['P_value'].round(4)
+        go_df['Adjusted_P_value'] = go_df['Adjusted_P_value'].round(4)
+        go_df['Old_P_value'] = go_df['Old_P_value'].round(4)
+        go_df['Old_Adjusted_P_value'] = go_df['Old_Adjusted_P_value'].round(4)
+        go_df['Odds_Ratio'] = go_df['Odds_Ratio'].round(4)
+        go_df['Combined_Score'] = go_df['Combined_Score'].round(4)
 
         return Response([Go_result, go_df])

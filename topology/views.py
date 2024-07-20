@@ -288,7 +288,7 @@ class topology_goView(APIView):
         go_df['Odds_Ratio'] = go_df['Odds_Ratio'].round(4)
         go_df['Combined_Score'] = go_df['Combined_Score'].round(4)
 
-        Go_result = pd.read_csv(home + 'Go_result.csv', index_col=0)
+        Go_result = pd.read_csv(home + '/Go_result.csv', index_col=0)
         Go_result['p_inv'] = Go_result['p_inv'].round(4)
         Go_result['Hits_ratio'] = Go_result['Hits_ratio'].round(4)
 

@@ -371,8 +371,8 @@ class crustdb_searchView(APIView):
         q_expression |= Q(sex__icontains=searchstr)
         q_expression |= Q(cell_type__icontains=searchstr)
         q_expression |= Q(slice_id__icontains=searchstr)
-        total_queryset = crustdb_main.objects.filter(
-            q_expression).order_by('id')
+        # total_queryset = crustdb_main.objects.filter(q_expression).order_by('id')
+        total_queryset = get_crustdb_main_with_annotated_field().filter(q_expression).order_by('id')
         paginator = LargeResultsSetPagination()
         paginated_crusts = paginator.paginate_queryset(
             total_queryset, request, view=self)
