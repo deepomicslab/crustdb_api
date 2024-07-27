@@ -289,6 +289,13 @@ class topology_goView(APIView):
         go_df['Combined_Score'] = go_df['Combined_Score'].round(4)
 
         Go_result = pd.read_csv(home + '/Go_result.csv', index_col=0)
+        # sorting
+        Go_result['sort_value'] = Go_result['Gene_set'].apply(lambda x: int(x.split(' ')[1]))
+        Go_result = Go_result.sort_values('sort_value')
+        Go_result = Go_result.drop(columns=['sort_value'])
+        # add Combined_Score and Genes
+        Go_result = pd.merge(Go_result, go_df, how='left', on=['Gene_set', 'Term'])[['Gene_set', 'Term', 'p_inv', 'Hits_ratio', 'Combined_Score','Genes']]
+        # rounding
         Go_result['p_inv'] = Go_result['p_inv'].round(4)
         Go_result['Hits_ratio'] = Go_result['Hits_ratio'].round(4)
 
