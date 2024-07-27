@@ -57,6 +57,10 @@ def get_species(species, slice_id):
 
 
 def process_digit(x):
+    if np.isnan(x):
+        return 'NaN'
+    if math.isinf(x):
+        return 'Inf'
     if x == 0:
         return 0
     elif x < 0.0001:
@@ -104,7 +108,7 @@ class topologyView(APIView):
             'average_branching_factor': process_digit(graph_obj.average_branching_factor),
             'modularity': process_digit(graph_obj.modularity),
             'span': process_digit(graph_obj.span),
-            'assortativity': 'NaN' if np.isnan(graph_obj.assortativity) else 'Inf' if math.isinf(graph_obj.assortativity) else process_digit(graph_obj.assortativity),
+            'assortativity': process_digit(graph_obj.assortativity),
             'degree_centrality': process_digit(graph_obj.degree_centrality),
             'closeness_centrality': process_digit(graph_obj.closeness_centrality),
             'betweenness_centrality': process_digit(graph_obj.betweenness_centrality),

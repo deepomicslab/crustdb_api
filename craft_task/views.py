@@ -505,6 +505,10 @@ class view_vis_topology_graphlist(APIView):
 
 
 def process_digit(x):
+    if np.isnan(x):
+        return 'NaN'
+    if math.isinf(x):
+        return 'Inf'
     if x == 0:
         return 0
     elif x < 0.0001:
@@ -519,7 +523,7 @@ def process_path(x: string):
     if 'MST' in x:
         return 'MST'
     if 'RNN-SNN' in x:
-        return 'RNN-SNN/' + x.split('=')[1].strip()[:-3]
+        return 'RNN_SNN/' + x.split('=')[1].strip()[:-3]
     if 'KNN' in x or 'KNN-SNN' in x or 'RNN' in x:
         if 'KNN-SNN' in x:
             return 'KNN_SNN/' + x.split('=')[1].strip()[:-1]
@@ -615,7 +619,7 @@ class view_vis_topology(APIView):
             'average_branching_factor': process_digit(graph_info['average_branching_factor']),
             'modularity': process_digit(graph_info['modularity']),
             'span': process_digit(graph_info['span']),
-            'assortativity': 'NaN' if np.isnan(graph_info['assortativity']) else 'Inf' if math.isinf(graph_info['assortativity']) else process_digit(graph_info['assortativity']),
+            'assortativity': process_digit(graph_info['assortativity']),
             'degree_centrality': process_digit(graph_info['degree_centrality']),
             'closeness_centrality': process_digit(graph_info['closeness_centrality']),
             'betweenness_centrality': process_digit(graph_info['betweenness_centrality']),
