@@ -280,7 +280,7 @@ class topology_goView(APIView):
             '/' + uid + '/' + graph_obj.type + '/' + graph_obj.graph_folder
 
         go_df = pd.read_csv(home + '/Go.csv', index_col=0).sort_values('P-value')
-        go_df.columns = ['Gene_set','Term','Overlap','P_value','Adjusted_P_value','Old_P_value','Old_Adjusted_P_value','Odds_Ratio','Combined_Score','Genes']
+        go_df.columns = ['Gene_set','Term','Overlap','P_value','Adjusted_P_value','Old_P_value','Old_Adjusted_P_value','Odds_Ratio','Combined_Score','Genes', 'Components']
         go_df['P_value'] = go_df['P_value'].round(4)
         go_df['Adjusted_P_value'] = go_df['Adjusted_P_value'].round(4)
         go_df['Old_P_value'] = go_df['Old_P_value'].round(4)
@@ -288,11 +288,11 @@ class topology_goView(APIView):
         go_df['Odds_Ratio'] = go_df['Odds_Ratio'].round(4)
         go_df['Combined_Score'] = go_df['Combined_Score'].round(4)
 
-        Go_result = pd.read_csv(home + '/Go_result.csv', index_col=0)
-        # sorting
-        Go_result['sort_value'] = Go_result['Gene_set'].apply(lambda x: int(x.split(' ')[1]))
-        Go_result = Go_result.sort_values('sort_value')
-        Go_result = Go_result.drop(columns=['sort_value'])
+        Go_result = pd.read_csv(home + '/Go_draw.csv', index_col=0)
+        # # sorting
+        # Go_result['sort_value'] = Go_result['Gene_set'].apply(lambda x: int(x.split(' ')[1]))
+        # Go_result = Go_result.sort_values('sort_value')
+        # Go_result = Go_result.drop(columns=['sort_value'])
         # add Combined_Score and Genes
         Go_result = pd.merge(Go_result, go_df, how='left', on=['Gene_set', 'Term'])[['Gene_set', 'Term', 'p_inv', 'Hits_ratio', 'Combined_Score','Genes']]
         # rounding

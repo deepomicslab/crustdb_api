@@ -709,54 +709,54 @@ class view_vis_topology_nodeattr(APIView):
         return Response([nodeInfoList])
 
 class view_vis_topology_goView(APIView):
-    def run_go_analysis(self, go_df, DotPlot):
-        result_new = go_df
-        if result_new.shape[0] > 200:
-            figsize=False
-            size = False
-            top_term=3
-        else:
-            figsize = (5,10)
-            size = 50
-            top_term = 5
+    # def run_go_analysis(self, go_df, DotPlot):
+    #     result_new = go_df
+    #     if result_new.shape[0] > 200:
+    #         figsize=False
+    #         size = False
+    #         top_term=3
+    #     else:
+    #         figsize = (5,10)
+    #         size = 50
+    #         top_term = 5
             
-        x_key = 'Gene_set'
-        if not figsize:
-            figsize = (int(len(result_new[x_key].unique())/3), int(top_term*len(result_new[x_key].unique())/10))
-        if not size:
-            size = int(top_term*len(result_new[x_key].unique())/15)
+    #     x_key = 'Gene_set'
+    #     if not figsize:
+    #         figsize = (int(len(result_new[x_key].unique())/3), int(top_term*len(result_new[x_key].unique())/10))
+    #     if not size:
+    #         size = int(top_term*len(result_new[x_key].unique())/15)
 
-        result_new.loc[:,'Term'] = result_new.loc[:,'Term'].str.split('(', expand=True)[0]
+    #     result_new.loc[:,'Term'] = result_new.loc[:,'Term'].str.split('(', expand=True)[0]
 
-        cutoff = 0.01
-        while int(len(result_new[result_new.loc[:,'Adjusted P-value'] <= cutoff][x_key].unique())) < 3:
-            cutoff = cutoff + 0.01
+    #     cutoff = 0.01
+    #     while int(len(result_new[result_new.loc[:,'Adjusted P-value'] <= cutoff][x_key].unique())) < 3:
+    #         cutoff = cutoff + 0.01
 
-        dot = DotPlot.DotPlot(
-            df=result_new,
-            x='Gene_set',
-            y='Term',
-            x_order=False,
-            y_order=False,
-            hue="Adjusted P-value",
-            title="title",
-            thresh=cutoff,
-            n_terms=int(top_term),
-            dot_scale=size,
-            figsize=figsize,
-            cmap="viridis_r",
-            ofname=None,
-            marker='o',
-        )
-        go_info = dot.data[['Gene_set', 'Term', 'p_inv', 'Hits_ratio']]
-        return go_info
+    #     dot = DotPlot.DotPlot(
+    #         df=result_new,
+    #         x='Gene_set',
+    #         y='Term',
+    #         x_order=False,
+    #         y_order=False,
+    #         hue="Adjusted P-value",
+    #         title="title",
+    #         thresh=cutoff,
+    #         n_terms=int(top_term),
+    #         dot_scale=size,
+    #         figsize=figsize,
+    #         cmap="viridis_r",
+    #         ofname=None,
+    #         marker='o',
+    #     )
+    #     go_info = dot.data[['Gene_set', 'Term', 'p_inv', 'Hits_ratio']]
+    #     return go_info
     
-    def load_gseapy(self):
-        import importlib.util
-        gseapy=importlib.util.spec_from_file_location("gseapy",local_settings.SCRIPTS+"cytotopo_reference_package/gseapy/plot.py")
-        DotPlot = importlib.util.module_from_spec(gseapy)
-        gseapy.loader.exec_module(DotPlot)
-        return DotPlot
+    # def load_gseapy(self):
+    #     import importlib.util
+    #     gseapy=importlib.util.spec_from_file_location("gseapy",local_settings.SCRIPTS+"cytotopo_reference_package/gseapy/plot.py")
+    #     DotPlot = importlib.util.module_from_spec(gseapy)
+    #     gseapy.loader.exec_module(DotPlot)
+    #     return DotPlot
 
     def get(self, request, *args, **kwargs):
         querydict = request.query_params.dict()
@@ -766,7 +766,7 @@ class view_vis_topology_goView(APIView):
         task_obj = craft_task.objects.get(id=taskid)
         home = task_obj.output_result_path + process_path(graph_selection_str)
         go_df = pd.read_csv(home + '/Go.csv', index_col=0).sort_values('P-value')
-        go_df.columns = ['Gene_set','Term','Overlap','P_value','Adjusted_P_value','Old_P_value','Old_Adjusted_P_value','Odds_Ratio','Combined_Score','Genes']
+        go_df.columns = ['Gene_set','Term','Overlap','P_value','Adjusted_P_value','Old_P_value','Old_Adjusted_P_value','Odds_Ratio','Combined_Score','Genes', 'Components']
         go_df['P_value'] = go_df['P_value'].round(4)
         go_df['Adjusted_P_value'] = go_df['Adjusted_P_value'].round(4)
         go_df['Old_P_value'] = go_df['Old_P_value'].round(4)
@@ -774,21 +774,12 @@ class view_vis_topology_goView(APIView):
         go_df['Odds_Ratio'] = go_df['Odds_Ratio'].round(4)
         go_df['Combined_Score'] = go_df['Combined_Score'].round(4)
 
-        # run go
-        # print('----------------------------', home + '/Go_result.csv')
-        # import os.path
-        if (os.path.isfile(home + '/Go_result.csv')):
-            Go_result = pd.read_csv(home + '/Go_result.csv', index_col=0).sort_values('p_inv')
-        # else:
-        #     DotPlot = self.load_gseapy()
-        #     go_info = self.run_go_analysis(go_df, DotPlot)
-        #     go_info.to_csv(home + '/Go_result.csv')
-        #     Go_result = go_info
+        Go_result = pd.read_csv(home + '/Go_draw.csv', index_col=0).sort_values('p_inv')
 
         # sorting
-        Go_result['sort_value'] = Go_result['Gene_set'].apply(lambda x: int(x.split(' ')[1]))
-        Go_result = Go_result.sort_values('sort_value')
-        Go_result = Go_result.drop(columns=['sort_value'])
+        # Go_result['sort_value'] = Go_result['Gene_set'].apply(lambda x: int(x.split(' ')[1]))
+        # Go_result = Go_result.sort_values('sort_value')
+        # Go_result = Go_result.drop(columns=['sort_value'])
         # add Combined_Score and Genes
         Go_result = pd.merge(Go_result, go_df, how='left', on=['Gene_set', 'Term'])[['Gene_set', 'Term', 'p_inv', 'Hits_ratio', 'Combined_Score','Genes']]
         # rounding
