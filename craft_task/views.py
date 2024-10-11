@@ -465,10 +465,10 @@ def canceltask(request):
     return Response(None)
 
 
-@api_view(['POST'])
-def refreshtaskresult(request):
-    taskCron.task_status_updata()
-    return Response(None)
+# @api_view(['POST'])
+# def refreshtaskresult(request):
+#     taskCron.task_status_updata()
+#     return Response(None)
 
 
 class view_vis_topology_graphlist(APIView):
