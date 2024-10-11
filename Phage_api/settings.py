@@ -163,8 +163,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 30
 }
+
 CRONJOBS = [
-    # ('*/1 * * * *', 'task.cron.task_status_updata')
-    # ('*/1 * * * *', 'craft_task.cron.task_status_updata')
-    ('*/1 * * * *', 'craft_task.cron.task_status_updata', '>> /home/platform/project/crustdb_platform/crustdb_api/workspace/analysis_script/tmp/cron_svc.log 2>&1')
+    ('*/1 * * * *', 'craft_task.cron.task_status_updata')
 ]
